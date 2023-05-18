@@ -27,13 +27,14 @@ def check_arg (args=None) :
 
     parser.add_argument('--kegg_dict', '-k', required=False, help = 'Json file of Kegg pathway dictionary')
 
-    parser.add_argument('--unit', '-u', choices=['tpm', 'rpkm', 'tm'])
+    parser.add_argument('--unit', '-u', type=str, choices=['tpm', 'rpkm', 'tm'], default='rpkm', help = 'Specify the output units for the relative abundance results. Default is rpkm')
     
     # on/off flag
     parser.add_argument('--filter_euk', '-e', action='store_true', required=False, help='Option to remove eukaryotes')
+    
     parser.add_argument('--novel_fam', '-f', action='store_true', required=False, help='Option to add novel families')
 
 
     # Example: python main.py -i data_resume/ -s sample_file.txt -k /Users/lucia/Desktop/TFM/scripts/parse_KEGGpathway_db/KEGG_KOs_dict.txt -f -e
 
-    return parser.parse_args() #, parser.print_help()
+    return parser.parse_args()

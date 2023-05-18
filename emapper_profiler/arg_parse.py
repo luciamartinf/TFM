@@ -18,10 +18,6 @@ def check_arg (args=None) :
     parser = argparse.ArgumentParser(prog = 'main.py', formatter_class=argparse.RawDescriptionHelpFormatter, description= 'Creates 2 tsv files with the ko abundance and kegg_pathway coverage of each sample')
 
     parser.add_argument('--inputdir','-i', required=True, help='Insert path with _coverage_values and .emapper.annotations files')
-	
-    #parser.add_argument('--inputdir_eggnogmapper','-e', required=False, help='Insert path with .emapper.annotations files')
-
-    #parser.add_argument('--inputdir_coverage','-c', required=False, help='Insert path with _coverage_values files')
     
     parser.add_argument('--outputdir','-o', required=False, help='The output directory to store the tsv files.')
 	
@@ -31,6 +27,8 @@ def check_arg (args=None) :
 
     parser.add_argument('--kegg_dict', '-k', required=False, help = 'Json file of Kegg pathway dictionary')
 
+    parser.add_argument('--unit', '-u', choices=['tpm', 'rpkm', 'tm'])
+    
     # on/off flag
     parser.add_argument('--filter_euk', '-e', action='store_true', required=False, help='Option to remove eukaryotes')
     parser.add_argument('--novel_fam', '-f', action='store_true', required=False, help='Option to add novel families')

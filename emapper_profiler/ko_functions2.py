@@ -110,6 +110,9 @@ def add_ko_abundance(ko_abundance_sample:dict, kos, abundance, total_abun):
     """
     add abundance to each ko on the list
     """
+    # divide abundance by number of kos annotated in the contig
+    abun = float(abundance)/len(kos)
+
     for ko_id in kos:
         # initialize dictionary for each ko
         if not ko_id in ko_abundance_sample.keys():
@@ -117,8 +120,10 @@ def add_ko_abundance(ko_abundance_sample:dict, kos, abundance, total_abun):
         
         
         # add ko abundance 
-        ko_abundance_sample[ko_id] += float(abundance)
-        total_abun += float(abundance)
+        ko_abundance_sample[ko_id] += abun # dividing by ko number
+        # ko_abundance_sample[ko_id] += float(abundance) # adding up
+
+    total_abun += float(abundance)
   
     return ko_abundance_sample, total_abun
 

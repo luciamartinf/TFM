@@ -51,8 +51,13 @@ class Coverm_sample(object):
             self.samplename = self.define_samplename() # function to extract samplename from filename
         else: 
             self.samplename = samplename
-        self.total_rpkm = 0
-        self.total_tm = 0
+
+        self.total['rpkm'] = 0
+        self.total['tm'] = 0
+        #self.total['tpm'] = 0
+        
+        # self.total_rpkm = 0
+        # self.total_tm = 0
 
     def define_samplename(self):
 
@@ -118,8 +123,12 @@ class Coverm_sample(object):
 
                 coverm_contig = Coverm_contig(contig, contig_length, read_count, reads_per_base, trimmed_mean, tpm, rpkm)
                 self.rows.append(coverm_contig)
-                self.total_rpkm += rpkm
-                self.total_tm += trimmed_mean
+                self.total['rpkm'] += rpkm
+                self.total['tm'] += trimmed_mean
+                self.total['tpm'] += tpm # esto debería ser igual a 1000000 ( 1 millon)
+
+                # self.total_rpkm += rpkm
+                # self.total_tm += trimmed_mean
 
 
 

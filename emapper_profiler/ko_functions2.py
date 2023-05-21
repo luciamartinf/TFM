@@ -81,7 +81,7 @@ def find_basal(eggnog_ogs):
             # self.kingdom = kingdom
             return og_id, kingdom
 
-def check_unmapped(dict1, sample_list):
+def check_unmapped(dict1:dict, sample_list:list):
  
     if 'UNMAPPED' in dict1.keys():
         dict1['UNMAPPED']['description'] = '@'

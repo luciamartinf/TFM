@@ -75,6 +75,10 @@ else:
 
 units_option = arguments.unit
 
+## coverm suffix
+
+coverm_suffix = arguments.coverm_suffix
+
 
 ## Option arguments
 
@@ -100,7 +104,7 @@ for sample in sample_list:
 
     # Define eggnog and coverm filenames
     eggnog_file = os.path.join(inputdir, sample + '.emapper.annotations')
-    coverm_file = os.path.join(inputdir, sample + '_coverage_values') # esto deberia hacerlo diferente
+    coverm_file = os.path.join(inputdir, sample + coverm_suffix)
     
 
     # Load eggnog and coverm samples    

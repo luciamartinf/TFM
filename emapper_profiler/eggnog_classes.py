@@ -125,7 +125,16 @@ class Eggnog_sample(object):
                             self.all_dict[query]['cog'] = find_basal(eggnog_ogs)
                             self.all_dict[query]['description'] = description
 
+    def calculate_contig_abundance(coverm_sample, unit):
 
+        i = 0
+
+        for eggnog_row in self.rows:
+
+            while coverm_sample.rows[i].contig != eggnog_row.contig:
+                i += 1
+            
+            eggnog_row.abundance = getattr(coverm_sample.rows[i], unit)
 
 # eggnog_file = "0505-0101.emapper.annotations"
 

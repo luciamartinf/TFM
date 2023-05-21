@@ -2,6 +2,49 @@
 # -*- coding: utf-8 -*-
 
 import json
+import csv 
+import re
+
+
+def unique(list1):
+
+    """
+    Function to transform a list so its elements are not repeated
+    """
+ 
+    # insert the list to the set
+    list_set = set(list1)
+    # convert the set to the list
+    unique_list = (list(list_set))
+
+    return unique_list
+
+def clean_header_names(name):
+    if ' ' in name:
+        name = name.split(' ', 1)[1]
+        clean_name = re.sub(' ', '_', name)
+    return clean_name
+
+def read_coverm_as_nested_dict(file_path, unit):
+    nested_dict = {}
+    total = {}
+    total = 0
+
+    with open(file_path, 'r') as tsv_file:
+        reader = csv.DictReader(tsv_file, delimiter='\t')
+
+        for row in reader:
+            contig = row['Contig']
+            nested_dict[contig] = {}
+
+            for key, value in row.items():
+                if key != 'Contig':
+                    clean_key = clean_header_names(key)
+                    if clean_key == unit:
+                        nested_dict[contig][clean_key] = value
+                        total += value
+
+    return nested_dict, total
 
 def get_ko_list(raw_ko):
 
@@ -21,219 +64,33 @@ def get_ko_list(raw_ko):
 
     return kos_list
 
+def find_basal(eggnog_ogs):
 
-def unique(list1):
-
+    """ 
+    Function to obtain the basal orthologous group and its kingdom level 
     """
-    Function to transform a list so its elements are not repeated
-    """
- 
-    # insert the list to the set
-    list_set = set(list1)
-    # convert the set to the list
-    unique_list = (list(list_set))
 
-    return unique_list
-
-
-
-def find_basal(raw_og):
-    og_org = {}
-    ogs = raw_og.split(',')
+    # Example of raw og line : COG0705@1|root,COG0705@2|Bacteria,1TSBP@1239|Firmicutes,249D8@186801|Clostridia
+    ogs = eggnog_ogs.split(',')
     for og in ogs:
         group, kingdom = og.split('|')
         og_id, tax_code = group.split('@')
-        if tax_code in ['2', '2759', '2157']:
-            og_org[og_id] = kingdom
-    return og_org
+        if tax_code in ['2', '2759', '2157']: # if tax_code corresponds to Bacteria, Eukaryota or Arkea 
+            # self.og = og_id
+            # self.kingdom = kingdom
+            return og_id, kingdom
 
-def add_og_abundance(og_abundance_sample:dict, og_description:dict, og_king:dict, raw_ogs, abundance, description):
-
-    """
-    calculate the OG abundance
-    """
-    og_king_small = find_basal(raw_ogs)
-
-    for og, king in og_king_small.items():
-
-        try: 
-            og_abundance_sample[og] += float(abundance)
-            
-        except:
-            og_abundance_sample[og] = float(abundance)
-            og_description[og] = description
-            og_king[og] = king
-
-  
-    return og_abundance_sample
-
-def og_abundance(eggnog_sample, coverm_sample, samplename, rel_og_abun:dict, sample_list):
-
-    """
-    Calculate every ko total abundance in a sample. 
-    This function relies on contigs and orf being sorted.
-    Takes rpkm value as abundance
-    """
-    og_description = {}
-    og_king = {}
-    i = 0
-
-    total_og_abun = float(coverm_sample.total_rpkm)
-
-    og_abundance_sample = {}
-
-    for eggnog_row in eggnog_sample.rows:
-
-        while coverm_sample.rows[i].contig != eggnog_row.contig:
-            i += 1
-        
-        eggnog_row.abundance = coverm_sample.rows[i].rpkm
-        og_abundance_sample = add_og_abundance(og_abundance_sample, og_description, og_king, eggnog_row.eggnog_ogs, eggnog_row.abundance, eggnog_row.description)
+def check_unmapped(dict1, sample_list):
+ 
+    if 'UNMAPPED' in dict1.keys():
+        dict1['UNMAPPED']['description'] = '@'
     
-    for og in og_abundance_sample.keys():
-        try:
-            rel_og_abun[og]['description'] = og_description[og]
-            
-        except:
-            rel_og_abun[og] = {}
-            rel_og_abun[og]['kingdom'] = og_king[og]  
-            rel_og_abun[og]['description'] = og_description[og]
-            for sample_id in sample_list:
-                rel_og_abun[og][sample_id] = 0
-
-        rel_og_abun[og][samplename] = og_abundance_sample[og]/total_og_abun*10**6     
-
-    return rel_og_abun
-
-def add_ko_abundance(ko_abundance_sample:dict, kos, abundance, total_abun):
-
-    """
-    add abundance to each ko on the list
-    """
-    # divide abundance by number of kos annotated in the contig
-    abun = float(abundance)/len(kos)
-
-    for ko_id in kos:
-        # initialize dictionary for each ko
-        if not ko_id in ko_abundance_sample.keys():
-            ko_abundance_sample[ko_id] = 0
-        
-        
-        # add ko abundance 
-        ko_abundance_sample[ko_id] += abun # dividing by ko number
-        # ko_abundance_sample[ko_id] += float(abundance) # adding up
-
-    total_abun += float(abundance)
-  
-    return ko_abundance_sample, total_abun
-
-def ko_abundance(eggnog_sample, coverm_sample, samplename, rel_ko_abun:dict, sample_list, kos_dict):
-
-    """
-    Calculate every ko total abundance in a sample. 
-    This function relies on contigs and orf being sorted.
-    Takes rpkm value as abundance
-    """
-    # CHECK WHEN A SEED CORRESPOND TO SEVERAL KOS
-    # more_kos = []
-    # total_kos = 0 
-
-    i = 0
+    else:
+        dict1['UNMAPPED'] = {}
+        for sample in sample_list:
+            dict1['UNMAPPED'][sample] = 0
     
-    global_ko_list = []
-
-    total_ko_abun = coverm_sample.total_rpkm
-    mapped_abun = 0
-
-    ko_abundance_sample = {}
-
-    for eggnog_row in eggnog_sample.rows:
-
-        
-        if eggnog_row.kegg_ko != '-':
-            # append kos from sample to global ko list
-            kos = get_ko_list(eggnog_row.kegg_ko)
-                
-            # CHECK WHEN A SEED CORRESPOND TO SEVERAL KOS
-            # total_kos +=1 
-            # if len(kos) > 1:
-            #     more_kos.append(len(kos))
-            #     #print(len(kos), eggnog_row.query)
-
-
-            for ko in kos:
-                global_ko_list.append(ko)
-
-            while coverm_sample.rows[i].contig != eggnog_row.contig:
-                i += 1
-                
-            eggnog_row.abundance = coverm_sample.rows[i].rpkm
-            ko_abundance_sample, mapped_abun = add_ko_abundance(ko_abundance_sample, kos, eggnog_row.abundance, mapped_abun)
-    
-    rel_ko_abun['UNMAPPED'][samplename] = 1000000 - float(mapped_abun)
-    rel_ko_abun['UNMAPPED']['description'] = '@'   
-
-    for ko_id in ko_abundance_sample.keys():
-        if not ko_id in rel_ko_abun.keys():
-            rel_ko_abun[ko_id] = {}
-            try: 
-                rel_ko_abun[ko_id]['description'] = kos_dict[ko_id]['description']
-            except:
-                rel_ko_abun[ko_id]['description'] = '@'
-            
-            for sample_id in sample_list:
-                rel_ko_abun[ko_id][sample_id]=0
-    
-        rel_ko_abun[ko_id][samplename] = ko_abundance_sample[ko_id]/total_ko_abun*10**6
-    
-    # CHECK WHEN A SEED CORRESPOND TO SEVERAL KOS
-    # total = len(more_kos)
-    # two = more_kos.count(2)
-    # three = more_kos.count(3)
-    # rest = total - two - three 
-    # print(total_kos, round((total/total_kos)*100,2), total, two, three, rest)
-
-
-    return rel_ko_abun, unique(global_ko_list)
-
-
-
-
-def calculate_KEGG_pathway_completeness(KEGG_dict, global_KOs_list, path_coverage, sample, sample_list): #output_file):
-
-    """
-    Function to calculate KEGG pathway completeness of each sample 
-    """
-
-    kegg_cov_dict = {}
-
-    #f = open(output_file, "w")
-
-    for kegg_p, annotation in KEGG_dict.items():
-        pathway_description = annotation[0]
-        kegg_number = annotation[1]
-        kegg_cov_dict[kegg_p] = 0   
-        for ko in annotation[2]:
-            ko_id = ko['KO']
-            # symbol = ko['symbol']
-            # description = ko['description']
-            if ko_id in global_KOs_list:
-                kegg_cov_dict[kegg_p] +=1
-        
-        if kegg_cov_dict[kegg_p] != 0:
-            coverage = kegg_cov_dict[kegg_p]/kegg_number
-            if coverage > 0.1: # cut-off proporcion
-                if not kegg_p in path_coverage.keys():
-                    path_coverage[kegg_p] = {}
-                    path_coverage[kegg_p]['description'] = pathway_description
-                    for sample_id in sample_list:
-                        path_coverage[kegg_p][sample_id] = 0
-                
-                path_coverage[kegg_p][sample] = coverage
-                #f.write("K{}\t{}\t{}\t{}\t{}\n".format(kegg_p,pathway_description,str(kegg_number),str(kegg_cov_dict[kegg_p]),str(coverage))) #, kos_list)			
-    return path_coverage
-
-
+    return dict1
 
 def write_tsv (dictionnary, out_file, header, sample_list, des = False, king = False, ko= False, cog= False):
 

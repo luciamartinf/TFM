@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from eggnog_classes import Eggnog_sample
-from coverm_classes import Coverm_sample
+from eggnog_classes2 import Eggnog_sample
 from novelfam_classes import NovelFam_sample
-from ko_functions1 import ko_abundance, write_tsv, calculate_KEGG_pathway_completeness, og_abundance, write_json
+from ko_functions2 import write_tsv, write_json, read_coverm_as_nested_dict
 from novelfam_fun import check_novelfam, nf_abundance, check_all_novelfam
 from arg_parse import check_arg
 import json
@@ -38,19 +37,6 @@ with open(kos_dict_file, "r") as file:
     kos_dict = json.load(file)
 
 ## Get input directory and its files
-
-# if arguments.inputdir:
-#     input_eggnog = arguments.inputdir
-#     input_cov = arguments.inputdir
-    
-# elif arguments.inputdir_eggnogmapper and arguments.inputdir_coverage:
-#     input_eggnog = arguments.inputdir_eggnogmapper
-#     input_cov = arguments.inputdir_coverage
-# else:
-#     print("error: either --inputdir -i or --input_eggnogmapper -e together with --input_coverage -c arguments required")
-    
-#     #help
-#     sys.exit()
     
 inputdir = arguments.inputdir
 files = os.listdir(inputdir)
@@ -84,6 +70,10 @@ else:
             samplename = re.sub(r'.emapper.annotations', '', basename)
             sample_list.append(samplename)
 
+## select units
+
+units_option = arguments.unit
+
 
 ## Option arguments
 
@@ -100,6 +90,8 @@ path_coverage = {}
 og_abundance_all = {}
 nf_abundance_all = {}
 
+Eggnog_sample.init_unit(units_option)
+Eggnog_sample.init_sample_list(sample_list)
 
 for sample in sample_list:
 
@@ -107,27 +99,26 @@ for sample in sample_list:
 
     # Define eggnog and coverm filenames
     eggnog_file = os.path.join(inputdir, sample + '.emapper.annotations')
-    coverm_file = os.path.join(inputdir, sample + '_coverage_values')
+    coverm_file = os.path.join(inputdir, sample + '_coverage_values') # esto deberia hacerlo diferente
     
 
     # Load eggnog and coverm samples    
-    eggnog_sample = Eggnog_sample(eggnog_file, sample, remove_euk)
-    eggnog_sample.load_sample()
-    coverm_sample = Coverm_sample(coverm_file, sample)
-    coverm_sample.load_sample()
+    coverm_dict, total_dict = read_coverm_as_nested_dict(coverm_file, Eggnog_sample.calc_unit) 
+    eggnog_sample = Eggnog_sample(eggnog_file, total_dict, sample, remove_euk)
+    eggnog_sample.load_sample(coverm_dict, og_abundance_all)
 
     # Add sample abundance and pathways coverage to complete dictionary
-    ko_abundance_all, all_ko_list = ko_abundance(eggnog_sample, coverm_sample, sample, ko_abundance_all, sample_list, kos_dict) 
-    path_coverage = calculate_KEGG_pathway_completeness(KEGG_dict, all_ko_list, path_coverage, sample, sample_list)
-    og_abundance_all = og_abundance(eggnog_sample, coverm_sample, sample, og_abundance_all, sample_list)
+    og_abundance_all = eggnog_sample.calculate_og(og_abundance_all)
+    ko_abundance_all = eggnog_sample.calculate_ko(ko_abundance_all)
+    path_coverage = eggnog_sample.calculate_KEGG_pathway_completeness(path_coverage, KEGG_dict)
+    
+    # if novel_fam :
+    #     novelfam_file = os.path.join(inputdir+'/novel_families/', sample + '.emapper.annotations')
+    #     novelfam_sample = NovelFam_sample(novelfam_file, sample)
+    #     novelfam_sample.load_sample()
 
-    if novel_fam :
-        novelfam_file = os.path.join(inputdir+'/novel_families/', sample + '.emapper.annotations')
-        novelfam_sample = NovelFam_sample(novelfam_file, sample)
-        novelfam_sample.load_sample()
-
-        #repeated_queries = check_all_novelfam(eggnog_sample, novelfam_sample, sample)
-        nf_abundance_all = nf_abundance(novelfam_sample, coverm_sample, sample, nf_abundance_all, sample_list, eggnog_sample)
+    #     #repeated_queries = check_all_novelfam(eggnog_sample, novelfam_sample, sample)
+    #     nf_abundance_all = nf_abundance(novelfam_sample, coverm_sample, sample, nf_abundance_all, sample_list, eggnog_sample)
 
     print('Finished processing sample {}'.format(sample))
 

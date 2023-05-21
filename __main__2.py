@@ -39,15 +39,16 @@ with open(kos_dict_file, "r") as file:
 ## Get input directory and its files
     
 inputdir = arguments.inputdir
+if not os.path.isdir(inputdir):
+    print('Error: Input directory does not exist')
+
 files = os.listdir(inputdir)
 
 ## Get output directory 
 
-if arguments.outputdir:
-    outputdir = arguments.outputdir
-else: 
-    outputdir = 'results'
+outputdir = arguments.outputdir
 
+# Create output directory if it does not exist
 if not os.path.isdir(outputdir):
     os.mkdir(outputdir)
 

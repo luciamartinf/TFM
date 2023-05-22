@@ -73,7 +73,7 @@ class Eggnog_sample(object):
     def init_unit(cls, given_unit):
 
         # dictionary to transform argument options into coverm units names 
-        unit_dict ={'rpkm': 'RPKM', 'tpm': 'TPM', 'tm':'Trimmed Mean'} 
+        unit_dict ={'rpkm': 'RPKM', 'tpm': 'TPM', 'tmm':'Trimmed Mean'} 
         units = unit_dict[given_unit] 
 
         Eggnog_sample.option_unit = units
@@ -164,6 +164,7 @@ class Eggnog_sample(object):
         
     
     def add_og_abundance(self, og, abundance, des, king, og_dict):
+    #def update_og_abundance(self, og, abundance, des, king, og_dict):
 
         """
         calculate the total abundance for each og in a sample
@@ -176,11 +177,12 @@ class Eggnog_sample(object):
         # if the og is not already in the dictionary :    
         else:
             self.og_abundance[og] = float(abundance)
-            og_dict[og] = {}
-            og_dict[og]['description'] = des # save the og description 
-            og_dict[og]['kingdom'] = king # save the og kingdom
-            for sample in Eggnog_sample.sample_list:
-                og_dict[og][sample] = 0
+            if og not in og_dict.keys():
+                og_dict[og] = {}
+                og_dict[og]['description'] = des # save the og description 
+                og_dict[og]['kingdom'] = king # save the og kingdom
+                for sample in Eggnog_sample.sample_list:
+                    og_dict[og][sample] = 0
             
     
         return og_dict, self.og_abundance

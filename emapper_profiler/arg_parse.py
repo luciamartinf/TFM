@@ -27,7 +27,7 @@ def check_arg (args=None) :
 
     parser.add_argument('--kegg_dict', '-k', required=False, help = 'Json file of Kegg pathway dictionary') # maybe this needs to be required
 
-    parser.add_argument('--unit', '-u', type=str, choices=['tpm', 'rpkm', 'tm'], default='rpkm', help = 'Specify the output units for the relative abundance results. Default is rpkm')
+    parser.add_argument('--unit', '-u', type=str, choices=['tpm', 'rpkm', 'tmm'], default='rpkm', help = 'Specify the output units for the relative abundance results. Default is rpkm')
     
     # on/off flag
     parser.add_argument('--filter_euk', '-e', action='store_true', required=False, help='Option to remove eukaryotes')

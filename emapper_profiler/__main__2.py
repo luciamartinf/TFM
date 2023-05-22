@@ -3,7 +3,7 @@
 
 from eggnog_classes2 import Eggnog_sample
 #from novelfam_classes import NovelFam_sample
-from ko_functions2 import write_tsv, write_json, read_coverm_as_nested_dict
+from ko_functions2 import write_tsv, write_json, read_coverm_as_nested_dict, extract_orf_lengths
 #from novelfam_fun import check_novelfam, nf_abundance, check_all_novelfam
 from arg_parse import check_arg
 import json
@@ -105,13 +105,15 @@ for sample in sample_list:
     # Define eggnog and coverm filenames
     eggnog_file = os.path.join(inputdir, sample + '.emapper.annotations')
     coverm_file = os.path.join(inputdir, sample + coverm_suffix)
+    genepred_file = os.path.join(inputdir, sample + '.emapper.genepred.fasta')
     
 
     # Load eggnog and coverm samples    
     coverm_dict, total_dict = read_coverm_as_nested_dict(coverm_file, Eggnog_sample.calc_unit) 
+    orf_length = extract_orf_lengths(genepred_file)
+
     eggnog_sample = Eggnog_sample(eggnog_file, total_dict, sample, remove_euk)
-    og_abundance, ko_abundance, og_abundance_all = eggnog_sample.load_sample(coverm_dict, og_abundance_all)
-    print(og_abundance)
+    og_abundance_all = eggnog_sample.load_sample(coverm_dict, og_abundance_all)
     # Add sample abundance and pathways coverage to complete dictionary
     og_abundance_all = eggnog_sample.calculate_og_abundance(og_abundance_all)
     ko_abundance_all = eggnog_sample.calculate_ko_abundance(ko_abundance_all, kos_dict)

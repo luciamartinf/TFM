@@ -21,6 +21,8 @@ def check_arg (args=None) :
     
     parser.add_argument('--outputdir','-o', required=False, default ='results' ,help='The output directory to store the tsv files.')
 	
+    parser.add_argument('--coverm_suffix', '-c', required=False, default='_coverage_values', help='The suffix of your CoverM files')
+    
     parser.add_argument('--version','-v', action='version', version='%(prog)s 0.0.1')
 
     parser.add_argument('--sample_file', '-s', required=False, help = 'txt file with a list of the samples that need to be processed. If not provided, the sample list will be generated given the input files')
@@ -34,7 +36,6 @@ def check_arg (args=None) :
     
     parser.add_argument('--novel_fam', '-f', action='store_true', required=False, help='Option to add novel families')
 
-    parser.add_argument('--coverm_suffix', '-c', required=False, default='_coverage_values', help='The suffix of your CoverM files')
 
     # python __main__2.py -i /Users/lucia/Desktop/TFM/scripts/final/data -k /Users/lucia/Desktop/TFM/scripts/parse_KEGGpathway_db/KEGG_pathway_dict.txt -e -u tpm -o results_tpm
 

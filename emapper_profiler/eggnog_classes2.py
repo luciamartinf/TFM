@@ -120,18 +120,29 @@ class Eggnog_sample(object):
                         raw_ko = items[11]
                         
                         
-                        if (self.remove_euk and '@2759') or '@10239' in eggnog_ogs: # remove euk. Esto puede ser un argumento 
+                        if self.remove_euk and '@2759' in eggnog_ogs: # remove euk. Esto puede ser un argumento 
+                            continue
+                        
+                        elif '@10239' in eggnog_ogs: # if virus
                             continue
 
                         else:
 
                             query = items[0]
-                            og, kingdom = find_basal(eggnog_ogs)
                             description = items[7]
                             preferred_name = items[8]
                             kegg_pathway = items[12]
                             contig = re.sub(r'_[0-9]*$', '', query)
                             abundance = coverm_dict[contig][Eggnog_sample.calc_unit]
+                            
+                            try:
+                                og, kingdom = find_basal(eggnog_ogs)
+                                og_dict = self.add_og_abundance(og, abundance, description, kingdom, og_dict)
+                                self.mapped += float(abundance) # estoy sumando por query !!
+                            except:
+                                #print('virus')
+                                og = '@'
+                                kingdom = 'Virus'
 
                             if raw_ko != '-':
                                 kegg_ko = get_ko_list(items[11])
@@ -140,14 +151,13 @@ class Eggnog_sample(object):
                             else:
                                 kegg_ko = '-'
 
+                            self.total += float(abundance) # para añadirlo al total y poder calcular bien la abundancia relativa no?
+
+                            # es posible que esto no me haga falta
                             eggnog_orf = Eggnog_orf(query, og, kingdom, description, preferred_name, kegg_ko, kegg_pathway, contig, abundance)
                             self.rows.append(eggnog_orf)
 
-                            self.og_abundance, og_dict = self.add_og_abundance(og, abundance, description, kingdom, og_dict)
-                            self.ko_abundance = self.add_ko_abundance(kegg_ko, abundance)
-
-                            self.mapped += float(abundance) # estoy sumando por query !!
-                            self.total += float(abundance) # para añadirlo al total y poder calcular bien la abundancia relativa no?
+                            
                             
                             
                             # if we want to add up abundance for each ko :
@@ -160,7 +170,7 @@ class Eggnog_sample(object):
                             # self.all_dict[query]['ko'] = kegg_ko
                             # self.all_dict[query]['cog'] = find_basal(eggnog_ogs)
                             # self.all_dict[query]['description'] = description
-        return self.og_abundance, self.ko_abundance, og_dict
+        return og_dict
         
     
     def add_og_abundance(self, og, abundance, des, king, og_dict):
@@ -169,23 +179,24 @@ class Eggnog_sample(object):
         """
         calculate the total abundance for each og in a sample
         """
-        
-        # try adding the abundance of the og to the og_abundance_sample dictionary
-        if og in self.og_abundance.keys():
-            self.og_abundance[og] += float(abundance)
 
-        # if the og is not already in the dictionary :    
-        else:
-            self.og_abundance[og] = float(abundance)
-            if og not in og_dict.keys():
-                og_dict[og] = {}
-                og_dict[og]['description'] = des # save the og description 
-                og_dict[og]['kingdom'] = king # save the og kingdom
-                for sample in Eggnog_sample.sample_list:
-                    og_dict[og][sample] = 0
+        # if the og is not in the dictionary, initialize key to 0
+        if og not in self.og_abundance.keys():
+            self.og_abundance[og] = 0
+
+        # add abundance:    
+        self.og_abundance[og] += float(abundance)
+
+        # if the og is not in the global og_dict initialize it in the dictionary
+        if og not in og_dict.keys():
+            og_dict[og] = {}
+            og_dict[og]['description'] = des # save the og description 
+            og_dict[og]['kingdom'] = king # save the og kingdom
+            for sample in Eggnog_sample.sample_list:
+                og_dict[og][sample] = 0
             
     
-        return og_dict, self.og_abundance
+        return og_dict #, self.og_abundance
     
     def add_ko_abundance(self, kos, abundance):
         
@@ -200,12 +211,12 @@ class Eggnog_sample(object):
             if not ko_id in self.ko_abundance.keys():
                 self.ko_abundance[ko_id] = 0
             
-            # add ko abundance 
+            # add ko abundance
             self.ko_abundance[ko_id] += abun # dividing by ko number
             # adding up
             # ko_abundance_sample[ko_id] += float(abundance) 
     
-        return self.ko_abundance
+        #return self.ko_abundance
 
     def calculate_og_abundance(self, og_dict:dict):
        
@@ -213,20 +224,23 @@ class Eggnog_sample(object):
 
             for og in self.og_abundance.keys():
                     
-                og_dict[og][self.samplename] = float(self.og_abundance[og])/(self.total*10**6)
+                og_dict[og][self.samplename] = (self.og_abundance[og]/self.total)*10**6
+                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped)*10**6
                 
             og_dict = check_unmapped(og_dict, Eggnog_sample.sample_list)
-            og_dict['UNMAPPED'][self.samplename] = 1000000 - float(self.mapped)/(self.total*10**6)
+            og_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped/self.total)*10**6 # Esto no esta bien
             og_dict['UNMAPPED']['kingdom'] = '@'
 
         else: 
 
             for og in self.og_abundance.keys():
                     
-                og_dict[og][self.samplename] = float(self.og_abundance[og])/self.total
+                og_dict[og][self.samplename] = self.og_abundance[og]/self.total
+                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped)
             
             og_dict = check_unmapped(og_dict, Eggnog_sample.sample_list)
-            og_dict['UNMAPPED'][self.samplename] = 1 - float(self.mapped)/self.total
+            
+            og_dict['UNMAPPED'][self.samplename] = 1 - self.mapped/self.total # Esto no esta bien
             og_dict['UNMAPPED']['kingdom'] = '@'
         
         # CHECK UP
@@ -274,10 +288,12 @@ class Eggnog_sample(object):
                     for sample_id in Eggnog_sample.sample_list:
                         ko_dict[ko_id][sample_id]=0
             
-                ko_dict[ko_id][self.samplename] =self.ko_abundance[ko_id]/(self.total*10**6)
+                ko_dict[ko_id][self.samplename] = (self.ko_abundance[ko_id]/self.total)*10**6
+                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped)*10**6
             
             ko_dict = check_unmapped(ko_dict, Eggnog_sample.sample_list)
-            ko_dict['UNMAPPED'][self.samplename] = 1000000 - float(self.mapped_ko)/(float(self.total)*10**6)
+            
+            ko_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped_ko/self.total)*10**6 # Esto no esta bien
 
         else:
 
@@ -298,7 +314,7 @@ class Eggnog_sample(object):
                 ko_dict[ko_id][self.samplename] = self.ko_abundance[ko_id]/self.total
             
             ko_dict = check_unmapped(ko_dict, Eggnog_sample.sample_list)
-            ko_dict['UNMAPPED'][self.samplename] = 1 - float(self.mapped_ko)/float(self.total)
+            ko_dict['UNMAPPED'][self.samplename] = 1 - self.mapped_ko/self.total # Esto no esta bien
 
 
         # CHECK WHEN A SEED CORRESPOND TO SEVERAL KOS

@@ -20,29 +20,38 @@ def unique(list1):
     return unique_list
 
 def clean_header_names(name):
+
+    """
+    Function to clean the header names of the CoverM file
+    """
+
     if ' ' in name:
         name = name.split(' ', 1)[1]
         clean_name = re.sub(' ', '_', name)
     return clean_name
 
 def read_coverm_as_nested_dict(file_path, unit):
+
+    """
+    Function to read the CoverM file as nested dictionary
+    """
+
     nested_dict = {}
-    total = {}
     total = 0
 
     with open(file_path, 'r') as tsv_file:
-        reader = csv.DictReader(tsv_file, delimiter='\t')
+        reader = csv.DictReader(tsv_file, delimiter='\t') # read tsv file
 
-        for row in reader:
-            contig = row['Contig']
+        for row in reader: # row is a dictionary 
+            contig = row['Contig'] # save contig
             nested_dict[contig] = {}
 
             for key, value in row.items():
-                if key != 'Contig':
+                if key != 'Contig': 
                     clean_key = clean_header_names(key)
-                    if clean_key == unit:
-                        nested_dict[contig][clean_key] = value
-                        total += float(value)
+                    if clean_key == unit: # get desired unit
+                        nested_dict[contig][clean_key] = value # add value to nested dictionary
+                        total += float(value) # sum value to total
 
     return nested_dict, total
 
@@ -125,3 +134,29 @@ def write_tsv (dictionnary, out_file, header, sample_list, des = False, king = F
 def write_json(file, dictionary):
     with open(file, 'w') as fp:
         json.dump(dictionary, fp)
+
+
+def extract_orf_lengths(fasta_file):
+    orf_lengths = {}  # Dictionary to store sequence names and lengths
+
+    with open(fasta_file, 'r') as file:
+        lines = file.readlines()
+
+        for line in lines:
+            line = line.strip()
+
+            if line.startswith('>'):
+                header = line[1:]  # Remove the leading '>'
+                orf_name = header.split(' ')[0]  # Extract the sequence name
+                info = header.split('#')[1:]  # Extract the sequence info after '#'
+
+                # Extract the start and end positions from the sequence info
+                start_pos = int(info[0].strip())
+                end_pos = int(info[1].strip())
+
+                # Calculate the sequence length
+                length = end_pos - start_pos + 1
+
+                orf_lengths[orf_name] = length
+
+    return orf_lengths

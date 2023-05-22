@@ -160,6 +160,7 @@ class Eggnog_sample(object):
                             # self.all_dict[query]['ko'] = kegg_ko
                             # self.all_dict[query]['cog'] = find_basal(eggnog_ogs)
                             # self.all_dict[query]['description'] = description
+        return self.og_abundance, self.ko_abundance, og_dict
         
     
     def add_og_abundance(self, og, abundance, des, king, og_dict):

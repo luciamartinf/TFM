@@ -110,8 +110,8 @@ for sample in sample_list:
     # Load eggnog and coverm samples    
     coverm_dict, total_dict = read_coverm_as_nested_dict(coverm_file, Eggnog_sample.calc_unit) 
     eggnog_sample = Eggnog_sample(eggnog_file, total_dict, sample, remove_euk)
-    eggnog_sample.load_sample(coverm_dict, og_abundance_all)
-
+    og_abundance, ko_abundance, og_abundance_all = eggnog_sample.load_sample(coverm_dict, og_abundance_all)
+    print(og_abundance)
     # Add sample abundance and pathways coverage to complete dictionary
     og_abundance_all = eggnog_sample.calculate_og_abundance(og_abundance_all)
     ko_abundance_all = eggnog_sample.calculate_ko_abundance(ko_abundance_all, kos_dict)

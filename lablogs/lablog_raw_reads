@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# to create samples_id.txt file
+ls *.gz | cut -d"_" -f1 | uniq  > samples_id.txt
+
+# to create samples_id_SqueezeMeta.txt file
+
+PAIR1="pair1"
+PAIR2="pair2"
+OUTPUT_FILE="samples_id_SqueezeMeta.txt"
+
+for file in *_R1.fastq.gz
+do
+
+    sample_id=$(echo "$file" | cut -d'_' -f1)
+
+    # Define file names
+    file1="${sample_id}_R1.fastq.gz"
+    file2="${sample_id}_R2.fastq.gz"
+
+    # Write to output file
+    echo "${sample_id}	${file1}	${PAIR1}" >> "${OUTPUT_FILE}"
+    echo "${sample_id}	${file2}	${PAIR2}" >> "${OUTPUT_FILE}"
+
+done
+
+
+
+
+

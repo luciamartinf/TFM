@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#SBATCH --job-name Squeezemeta        # Name for your job
+#SBATCH --partition=bigmem,long        # total run time limit in HH:MM:SS
+#SBATCH --output=logs/Squeezemeta-%j_%N.out # STDOUT file, %j for job id, %N for hostname
+#SBATCH --error=logs/Squeezemeta-%j_%N.err  # STDERR fil
+#SBATCH --time=20-00:00:00          # total run time limit in HH:MM:SS
+#SBATCH --mail-type=end          # send email when job ends
+#SBATCH --mail-user=luciamartinfernandez99@gmail.com # this is the email you wish to be notified at
+#SBATCH --mem=200GB              # Reserve X GB RAM for the job
+#SBATCH -c 12                     # request for cores to be in the same node 
+#SBATCH --array=0             # Array range and number of simultanous jobs
+ 
+
+# Activate the conda environment
+
+#conda activate SqueezeMeta
+ 
+#SqueezeMeta: a fully automated metagenomics pipeline, from reads to bins
+
+#If the SqueezeMeta databases are already built in another location in the system, a different copy of SqueezeMeta can be configured to use them with:
+
+#configure_nodb.pl /home/giner/Squeezmeta_DBs/db
+
+#mkdir logs
+
+
+#SqueezeMeta.pl -m coassembly -p RyC_binning -s /home/lmartin/SRV_RyC/02-trimmomatic/samples_id_SqueezeMeta.txt -f /home/lmartin/SRV_RyC/02-trimmomatic -b 25 -t 12
+
+SqueezeMeta.pl -m sequential -s /home/lmartin/SRV_RyC/02-trimmomatic/samples_id_SqueezeMeta_2.txt -f /home/lmartin/SRV_RyC/02-trimmomatic -b 25 -t 12
+
+# Por defecto corre Megahit pero puede usar Spades con los flags -a [spades | spades_base | rnaspades]
+

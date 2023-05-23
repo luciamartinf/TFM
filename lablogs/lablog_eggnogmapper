@@ -53,10 +53,5 @@ names=($(cat /home/lmartin/SRV_RyC/00-raw_reads/samples_id.txt))
 
 emapper.py -m novel_fams --itype metagenome --genepred prodigal -i $RUN_PATH_I/${names[${SLURM_ARRAY_TASK_ID}]}/contigs.fasta --output_dir $RUN_PATH_O/new_novelfamilies/ --output ${names[${SLURM_ARRAY_TASK_ID}]} --dbmem --excel --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0
 
-#cat /home/sbodi/SRV_AZNALCOLLAR/00-raw_reads/samples_id.txt | xargs -I % echo "grep -v '@2759' %.emapper.annotations > %.emapper.annotations_wo_euk">> filtering_eukaryote.sh
-
-#featureCounts -t CDS -g ID -a /home/sbodi/SRV_AZNALCOLLAR/08-eggnogmapper/${names[${SLURM_ARRAY_TASK_ID}]}.emapper.genepred.gff -o counts_${names[${SLURM_ARRAY_TASK_ID}]}.txt /home/sbodi/SRV_AZNALCOLLAR/08-eggnogmapper/coverage_calculations/final.contigs.fa.${names[${SLURM_ARRAY_TASK_ID}]}_R1.clean_qc_pair.fastq.bam -s 2 -T 64 -M --primary -p -F GFF
-
-#featureCounts -t CDS -g ID -a /home/sbodi/SRV_AZNALCOLLAR/08-eggnogmapper/5.emapper.genepred.gff -o counts_5.txt /home/sbodi/SRV_AZNALCOLLAR/08-eggnogmapper/coverage_calculations/final.contigs.fa.5_R1.clean_qc_pair.fastq.bam -s 2 -T 64 -M --primary -p -F GFF
 
 

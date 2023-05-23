@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 #SBATCH --job-name coverm        # Name for your job
-#SBATCH --partition=fast       # total run time limit in HH:MM:SS
-#SBATCH --time=1:00:00          # total run time limit in HH:MM:SS
+#SBATCH --partition=fast         # Partition to submit
+#SBATCH --time=1:00:00           # total run time limit in HH:MM:SS
 #SBATCH --mail-type=end          # send email when job ends
 #SBATCH --mail-user=luciamartinfernandez99@gmail.com # this is the email you wish to be notified at
-#SBATCH --nodes=1                    # request for cores to be in the same node 
-#SBATCH --array=0-116             # Array range and number of simultanous jobs. Array per sample?
-#SBATCH -c 5                          # cpu-cores per task (>1 if multi-threaded tasks)
-#SBATCH --mem=25GB                    # node count
+#SBATCH --nodes=1                # node count
+#SBATCH -c 5                     # cpu-cores per task (>1 if multi-threaded tasks)
+#SBATCH --mem=25GB               # Reserve X GB RAM for the job
+#SBATCH --array=0-116            # Array range and number of simultanous jobs.
 
 
-
-# Load required modules
-
-#conda activate coverm
+# Activate conda environment in terminal
+# conda activate coverm
 
 #Create variables of input and output data
 
@@ -23,9 +21,8 @@ RUN_PATH_O=/home/lmartin/SRV_RyC/06-eggnogmapper/coverage_calculations
 names=($(cat /home/lmartin/SRV_RyC/00-raw_reads/samples_id.txt))
 
 
-#Generating BAM file through metaspades alignment contigs and paired reads and calculate coverage of contigs with CoverM version 0.6.1
-#conda activate coverm-0.6.1
-#CoverM - Read coverage calculator for metagenomics - GitHub https://github.com/wwood/CoverM
+# Generating BAM file through metaspades alignment contigs and paired reads and calculate coverage of contigs with CoverM version 0.6.1
+# CoverM - Read coverage calculator for metagenomics - GitHub https://github.com/wwood/CoverM
 
 coverm contig -1 $RUN_PATH_fastq/${names[${SLURM_ARRAY_TASK_ID}]}_R1.clean_qc_pair.fastq -2 $RUN_PATH_fastq/${names[${SLURM_ARRAY_TASK_ID}]}_R2.clean_qc_pair.fastq -r $RUN_PATH_fasta/${names[${SLURM_ARRAY_TASK_ID}]}/contigs.fasta  --bam-file-cache-directory $RUN_PATH_O/ -o $RUN_PATH_O/${names[${SLURM_ARRAY_TASK_ID}]}_coverage_values -m length count reads_per_base mean trimmed_mean tpm rpkm
 

@@ -1,7 +1,9 @@
 #!/bin/bash
+## Script to create the needed samples list files
 
 # to create samples_id.txt file
 ls *.gz | cut -d"_" -f1 | uniq  > samples_id.txt
+
 
 # to create samples_id_SqueezeMeta.txt file
 

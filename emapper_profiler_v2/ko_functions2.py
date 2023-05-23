@@ -125,8 +125,8 @@ def write_tsv (dictionnary, out_file, header, sample_list, des = False, king = F
                 fo.write('\t'+str(dictionnary[key]['ko']))
             for sample in sample_list:
                 fo.write('\t'+ str(dictionnary[key][sample]))
-            if cog:
-                fo.write('\t'+str(dictionnary[key]['cog']).strip(', '))
+            # if cog:
+            #     fo.write('\t'+str(dictionnary[key]['cog']).strip(', '))
             fo.write('\n')
     return
 

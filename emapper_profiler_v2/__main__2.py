@@ -156,7 +156,7 @@ write_tsv(path_coverage, path_cov_file, header, sample_list, des = True)
 header='OG\tKingdom\tDescription\t'+ '\t'.join(sample_list)
 write_tsv(og_abundance_all, og_abun_file, header, sample_list, des = True, king = True)
 
-header='Novel_Fam\t'+ '\t'.join(sample_list) + '\tCOG_match'
-write_tsv(nf_abundance_all, nf_abun_file, header, sample_list, cog=True)
+header='Novel_Fam\t'+ '\t'.join(sample_list) #+ '\tCOG_match'
+write_tsv(nf_abundance_all, nf_abun_file, header, sample_list) #, cog=True)
 
 

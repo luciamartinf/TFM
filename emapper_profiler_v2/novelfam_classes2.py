@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import dataclass, field
-from ko_functions2 import check_unmapped
+from ko_functions2 import check_unmapped, check_key
 import numpy as np
 import re
 import os
@@ -74,7 +74,7 @@ class NovelFam_sample(object):
     
     @classmethod
     def init_sample_list(cls, sample_list):
-        NovelFam_sample_list = sample_list
+        NovelFam_sample.sample_list = sample_list
 
     def define_samplename(self):
 
@@ -125,12 +125,12 @@ class NovelFam_sample(object):
             self.nf_abundance[nf] += abundance
     
 
-    def calculate_og_abundance(self, og_dict:dict):
+    def calculate_nf_abundance(self, nf_dict:dict):
        
         if NovelFam_sample.option_unit == 'TPM':
 
             for nf in self.nf_abundance.keys():
-                    
+                nf_dict = check_key(nf_dict, nf, NovelFam_sample.sample_list) 
                 nf_dict[nf][self.samplename] = (self.nf_abundance[nf]/self.total)*10**6
                 
             nf_dict = check_unmapped(nf_dict, NovelFam_sample.sample_list, des=False)
@@ -141,9 +141,9 @@ class NovelFam_sample(object):
         else: 
 
             for nf in self.nf_abundance.keys():
-                    
-                og_dict[nf][self.samplename] = self.nf_abundance[nf]/self.total
-                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped)
+
+                nf_dict = check_key(nf_dict, nf, NovelFam_sample.sample_list)    
+                nf_dict[nf][self.samplename] = self.nf_abundance[nf]/self.total
             
             nf_dict = check_unmapped(nf_dict, NovelFam_sample.sample_list, des=False)
             nf_dict['UNMAPPED'][self.samplename] = 1 - self.mapped/self.total

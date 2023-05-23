@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from eggnog_classes2 import Eggnog_sample
-#from novelfam_classes import NovelFam_sample
+from novelfam_classes2 import NovelFam_sample
 from ko_functions2 import write_tsv, write_json, read_coverm_as_nested_dict, extract_orf_lengths
 #from novelfam_fun import check_novelfam, nf_abundance, check_all_novelfam
 from arg_parse import check_arg
@@ -98,6 +98,9 @@ nf_abundance_all = {}
 Eggnog_sample.init_unit(units_option)
 Eggnog_sample.init_sample_list(sample_list)
 
+NovelFam_sample.init_unit(units_option)
+NovelFam_sample.init_sample_list(sample_list)
+
 for sample in sample_list:
 
     print('Starting processing sample {}'.format(sample))
@@ -114,19 +117,21 @@ for sample in sample_list:
 
     eggnog_sample = Eggnog_sample(eggnog_file, total, sample, remove_euk)
     og_abundance_all = eggnog_sample.load_sample(orf_dict, og_abundance_all)
+    
     # Add sample abundance and pathways coverage to complete dictionary
     og_abundance_all = eggnog_sample.calculate_og_abundance(og_abundance_all)
     ko_abundance_all = eggnog_sample.calculate_ko_abundance(ko_abundance_all, kos_dict)
     path_coverage = eggnog_sample.calculate_KEGG_pathway_completeness(path_coverage, KEGG_dict)
     
+    # Repeat process for novel families
     if novel_fam :
-         novelfam_file = os.path.join(inputdir+'/novel_families/', sample + '.emapper.annotations')
-    #     novelfam_sample = NovelFam_sample(novelfam_file, sample)
-    #     novelfam_sample.load_sample()
+        novelfam_file = os.path.join(inputdir+'/novel_families/', sample + '.emapper.annotations')
+        novelfam_sample = NovelFam_sample(novelfam_file, total, sample)
+        novelfam_sample.load_sample(orf_dict)
+        nf_abundance_all = novelfam_sample.calculate_nf_abundance(nf_abundance_all)
 
     #     #repeated_queries = check_all_novelfam(eggnog_sample, novelfam_sample, sample)
-    #     nf_abundance_all = nf_abundance(novelfam_sample, coverm_sample, sample, nf_abundance_all, sample_list, eggnog_sample)
-
+          
     print('Finished processing sample {}'.format(sample))
 
 

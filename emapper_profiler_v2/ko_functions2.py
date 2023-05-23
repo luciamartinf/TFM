@@ -185,3 +185,10 @@ def extract_orf_lengths(fasta_file, coverm_dict:dict, unit):
     #         total += abundance
 
     return orf_dict, total
+
+def check_key(dict1, key, sample_list):
+    if not key in dict1.keys():
+        dict1[key] = {}
+        for sample in sample_list:
+            dict1[key][sample] = 0
+    return dict1

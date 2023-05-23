@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
-BATCH --mem=100GB    # se puede bajar a 10GB 
+#SBATCH --job-name motus
+#SBATCH --mem=100GB                   # Reserve X GB RAM for the job
 #SBATCH -c 24
 #SBATCH -N 1
-#SBATCH --job-name motus
-#SBATCH --output=logs/mOTUS-%a.%A.out # STDOUT file, %j for job id, %N for hostname
+#SBATCH --output=logs/mOTUS-%a.%A.out # STDOUT file
 #SBATCH --error=logs/mOTUS-%a.%A.err  # STDERR file
-#SBATCH --partition=bigmem,long                # total run time limit in HH:MM:SS
-#SBATCH --time=99:00:00            # total run time limit in HH:MM:SS
-#SBATCH --mail-type=end            # send email when job ends
+#SBATCH --partition=bigmem,long       # Partition to submit
+#SBATCH --time=99:00:00               # total run time limit in HH:MM:SS
+#SBATCH --mail-type=end               # send email when job ends
 #SBATCH --mail-user=luciamartinfernandez99@gmail.com
 #SBATCH --array=0-116
 
-#conda activate ShotGun
+# Remember to create logs directory in terminal
+# mkdir logs 
+
+# Activate Conda environment in terminal
+# conda activate ShotGun
+
+# Motus info:
 #Version: 3.0.1
 #-g  INT          number of marker genes cutoff: 1=higher recall, 10=higher precision [3]
 #Print all taxonomy levels together [-A]
@@ -21,19 +27,19 @@ BATCH --mem=100GB    # se puede bajar a 10GB
 # -I  FILE         save the result of BWA in BAM format (output of motus map_tax) 
 #-M  FILE         save the mgc reads count (output of motus calc_mgc) 
 
+
+# Define variables
 PATH_I=/home/lmartin/SRV_RyC/02-trimmomatic
 PATH_O=/home/lmartin/SRV_RyC/04-motus2
 names=($(cat /home/lmartin/SRV_RyC/00-raw_reads/samples_id.txt))
 
-mkdir logs 
-
-
+# 1. Execute motus profile
 motus profile -f $PATH_I/${names[${SLURM_ARRAY_TASK_ID}]}_R1.clean_qc_pair.fastq -r $PATH_I/${names[${SLURM_ARRAY_TASK_ID}]}_R2.clean_qc_pair.fastq -n ${names[${SLURM_ARRAY_TASK_ID}]} -o $PATH_O/${names[${SLURM_ARRAY_TASK_ID}]}.motus_results_g1l70 -g 1 -l 70 -I $PATH_O/${names[${SLURM_ARRAY_TASK_ID}]}_g1l70.bam -M $PATH_O/mgc_read_count.${names[${SLURM_ARRAY_TASK_ID}]} -q -c 
 
-#motus calc_motu -i $PATH_O/mgc_read_count.${names[${SLURM_ARRAY_TASK_ID}]} -o $PATH_O/counts_3_70/${names[${SLURM_ARRAY_TASK_ID}]}.motus_results -n ${names[${SLURM_ARRAY_TASK_ID}]} -g 3 -l 70 -A -c
+# 2. Recalc previous motus results
+# motus calc_motu -i $PATH_O/mgc_read_count.${names[${SLURM_ARRAY_TASK_ID}]} -o $PATH_O/counts_3_70/${names[${SLURM_ARRAY_TASK_ID}]}.motus_results -n ${names[${SLURM_ARRAY_TASK_ID}]} -g 3 -l 70 -A -c
 
 
-#All results
-
-#motus merge -d /home/lmartin/SRV_RyC/04-motus2/counts_1_70/ -o /home/lmartin/SRV_RyC/04-motus2/counts_1_70/counts_1_70_all_motus_profile.tsv
+# 3. All results
+# motus merge -d /home/lmartin/SRV_RyC/04-motus2/counts_1_70/ -o /home/lmartin/SRV_RyC/04-motus2/counts_1_70/counts_1_70_all_motus_profile.tsv
 

@@ -8,7 +8,7 @@
 #SBATCH --output=logs/01-FastQC_%a.%A.out # STDOUT file 
 #SBATCH --mail-type=end                   # send email when job ends
 #SBATCH --mail-user=luciamartinfernandez99@gmail.com # this is the email you wish to be notified at
-#SBATCH --array=1-234                     # Array range and number of simultanous job (4 files per sample; R1 and R2; 16x2=32)
+#SBATCH --array=1-234                     # Array range and number of simultanous job
 
 # Remember to create logs directory on terminal
 # mkdir logs

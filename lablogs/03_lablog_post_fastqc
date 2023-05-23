@@ -1,32 +1,33 @@
 #!/bin/bash
 
-#SBATCH --job-name post-trimming        # Name for your job
-#SBATCH --ntasks 1                     # Number of task
+#SBATCH --job-name post-trimming       # Name for your job
+#SBATCH --nodes=1                      # node count
+#SBATCH --cpus-per-task=1              # cpu-cores per task (>1 if multi-threaded tasks), same as -c 1
 #SBATCH --time=01:00:00                # Total run time limit in HH:MM:SS
 #SBATCH --partition=fast               # Partition to submit
 #SBATCH --output=logs/03-post_FastQC_%a.%A.out # STDOUT file
 #SBATCH --error=logs/03-post_FastQC_%A_%a.err  # STDERR file
 #SBATCH --mail-type=end                # send email when job ends
 #SBATCH --mail-user=luciamartinfernandez99@gmail.com # this is the email you wish to be notified at
-#SBATCH --array=1-234                   # Array range and number of simultanous job (4 files per sample; R1 and R2; 16x2=32)
+#SBATCH --array=1-234                  # Array range and number of simultanous job
+
+# Remember to create logs directory in the terminal
+# mkdir logs
+
+# Activate conda environment in the terminal
+# source $HOME/miniconda3/bin/activate
 
 # Load required modules
 ml FastQC 
 
-
 # Search all the fastq files from the "data" directory and generate the array
 file=$(ls /home/lmartin/SRV_RyC/02-trimmomatic/*.clean_qc_pair.fastq|sed -n ${SLURM_ARRAY_TASK_ID}p)
 
-mkdir logs
+# 1. Run quality analysis on each fastq file
+fastqc -o /home/lmartin/SRV_RyC/03-post_fastqc/ $file
 
-# Run quality analysis on each fastq file
-
-#fastqc -o /home/lmartin/SRV_RyC/03-post_fastqc/ $file
-
-#Run multiqc to create summary report
-
-#source $HOME/miniconda3/bin/activate
-multiqc --force ./
+# 2. Run multiqc to create summary report
+# multiqc --force ./
 
 
 

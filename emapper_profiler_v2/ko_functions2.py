@@ -37,7 +37,7 @@ def read_coverm_as_nested_dict(file_path, unit):
     """
 
     nested_dict = {}
-    total = 0
+    #total = 0
 
     with open(file_path, 'r') as tsv_file:
         reader = csv.DictReader(tsv_file, delimiter='\t') # read tsv file
@@ -50,10 +50,11 @@ def read_coverm_as_nested_dict(file_path, unit):
                 if key != 'Contig': 
                     clean_key = clean_header_names(key)
                     if clean_key == unit: # get desired unit
-                        nested_dict[contig][clean_key] = value # add value to nested dictionary
-                        total += float(value) # sum value to total
+                        
+                        nested_dict[contig][unit] = value # add value to nested dictionary
+                        #total += float(value) # sum value to total
 
-    return nested_dict, total
+    return nested_dict
 
 def get_ko_list(raw_ko):
 
@@ -90,16 +91,15 @@ def find_basal(eggnog_ogs):
             # self.kingdom = kingdom
             return og_id, kingdom
 
-def check_unmapped(dict1:dict, sample_list:list):
- 
-    if 'UNMAPPED' in dict1.keys():
-        dict1['UNMAPPED']['description'] = '@'
+def check_unmapped(dict1:dict, sample_list:list, des=True):
     
-    else:
+    if 'UNMAPPED' not in dict1.keys():
         dict1['UNMAPPED'] = {}
         for sample in sample_list:
             dict1['UNMAPPED'][sample] = 0
-    
+        if des == True:
+            dict1['UNMAPPED']['description'] = '@'
+
     return dict1
 
 def write_tsv (dictionnary, out_file, header, sample_list, des = False, king = False, ko= False, cog= False):
@@ -136,8 +136,11 @@ def write_json(file, dictionary):
         json.dump(dictionary, fp)
 
 
-def extract_orf_lengths(fasta_file):
-    orf_lengths = {}  # Dictionary to store sequence names and lengths
+def extract_orf_lengths(fasta_file, coverm_dict:dict, unit):
+    
+    orf_dict = {}  # Dictionary to store sequence names, lengths and abundances
+    total = 0
+    orf_per_contig = {}
 
     with open(fasta_file, 'r') as file:
         lines = file.readlines()
@@ -157,6 +160,28 @@ def extract_orf_lengths(fasta_file):
                 # Calculate the sequence length
                 length = end_pos - start_pos + 1
 
-                orf_lengths[orf_name] = length
+                orf_dict[orf_name] = {}
+                orf_dict[orf_name]['length'] = length
 
-    return orf_lengths
+                contig_name = re.sub(r'_[0-9]*$', '', orf_name)
+                abundance = float(coverm_dict[contig_name][unit])
+                orf_dict[orf_name]['abundance'] = abundance
+                total += abundance
+
+    #             if unit == 'Trimmed Mean':
+    #                 total += abundance
+    #             else:
+    #                 try:
+    #                     orf_per_contig[contig_name] += 1
+    #                 except:
+    #                     orf_per_contig[contig_name] = 1
+                
+    # if unit == 'RPKM':
+    #     for orf in orf_dict.keys():
+    #         contig_name = re.sub(r'_[0-9]*$', '', orf)
+    #         abun_1 = float(orf_dict[orf]['abundance'])
+    #         abundance = abun_1 / int(orf_per_contig[contig_name])
+    #         orf_dict[orf]['abundance'] = abundance
+    #         total += abundance
+
+    return orf_dict, total

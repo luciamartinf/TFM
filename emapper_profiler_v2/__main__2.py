@@ -90,7 +90,7 @@ novel_fam = arguments.novel_fam
 #########################
 
 ko_abundance_all = {}
-ko_abundance_all['UNMAPPED'] = {}
+#ko_abundance_all['UNMAPPED'] = {}
 path_coverage = {}
 og_abundance_all = {}
 nf_abundance_all = {}
@@ -109,18 +109,18 @@ for sample in sample_list:
     
 
     # Load eggnog and coverm samples    
-    coverm_dict, total_dict = read_coverm_as_nested_dict(coverm_file, Eggnog_sample.calc_unit) 
-    orf_length = extract_orf_lengths(genepred_file)
+    coverm_dict = read_coverm_as_nested_dict(coverm_file, Eggnog_sample.calc_unit) 
+    orf_dict, total = extract_orf_lengths(genepred_file, coverm_dict, Eggnog_sample.calc_unit)
 
-    eggnog_sample = Eggnog_sample(eggnog_file, total_dict, sample, remove_euk)
-    og_abundance_all = eggnog_sample.load_sample(coverm_dict, og_abundance_all)
+    eggnog_sample = Eggnog_sample(eggnog_file, total, sample, remove_euk)
+    og_abundance_all = eggnog_sample.load_sample(orf_dict, og_abundance_all)
     # Add sample abundance and pathways coverage to complete dictionary
     og_abundance_all = eggnog_sample.calculate_og_abundance(og_abundance_all)
     ko_abundance_all = eggnog_sample.calculate_ko_abundance(ko_abundance_all, kos_dict)
     path_coverage = eggnog_sample.calculate_KEGG_pathway_completeness(path_coverage, KEGG_dict)
     
-    # if novel_fam :
-    #     novelfam_file = os.path.join(inputdir+'/novel_families/', sample + '.emapper.annotations')
+    if novel_fam :
+         novelfam_file = os.path.join(inputdir+'/novel_families/', sample + '.emapper.annotations')
     #     novelfam_sample = NovelFam_sample(novelfam_file, sample)
     #     novelfam_sample.load_sample()
 

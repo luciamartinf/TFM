@@ -6,35 +6,35 @@ import re
 import os
 from ko_functions2 import get_ko_list, find_basal, check_unmapped
 
-@dataclass
-class Eggnog_orf(object):
+# @dataclass
+# class Eggnog_orf(object):
 
-    """
-    Dataclass to store eggnog's attributes corresponding to one orf
-    """
+#     """
+#     Dataclass to store eggnog's attributes corresponding to one orf
+#     """
 
-    query: str
-    og: str 
-    kingdom: str 
-    description: str # = field(repr=False)
-    preferred_name:	str
-    #GOs: str	
-    kegg_ko: list
-    kegg_pathway: str
-    #KEGG_Module: str	
-    contig: str #= field(init=False) 
-    abundance: float
+#     query: str
+#     og: str 
+#     kingdom: str 
+#     description: str # = field(repr=False)
+#     preferred_name:	str
+#     #GOs: str	
+#     kegg_ko: list
+#     kegg_pathway: str
+#     #KEGG_Module: str	
+#     #contig: str #= field(init=False) 
+#     abundance: float
 
-    def __str__(self):
+#     def __str__(self):
 
-        """
-        Instance method to define the print format of the instance
-        """
+#         """
+#         Instance method to define the print format of the instance
+#         """
 
-        row_list = [self.query, self.seed_ortholog, self.eggnog_ogs, self.max_annot_lvl, self.kegg_ko, self.kegg_pathway, self.contig]
-        s = '\t'.join([str(item) for item in row_list])
+#         row_list = [self.query, self.seed_ortholog, self.eggnog_ogs, self.max_annot_lvl, self.kegg_ko, self.kegg_pathway, self.contig]
+#         s = '\t'.join([str(item) for item in row_list])
         
-        return s
+#         return s
     
             
 class Eggnog_sample(object):
@@ -49,8 +49,8 @@ class Eggnog_sample(object):
     sample_list = None
     
 
-    def __init__(self, filename: str, total_sample:dict, samplename = None, remove_euk = False) -> None:
-        self.rows = []
+    def __init__(self, filename: str, total_sample:float, samplename = None, remove_euk = False) -> None:
+        #self.rows = []
         self.filename = filename
         self.remove_euk = remove_euk
         if samplename == None :
@@ -60,8 +60,8 @@ class Eggnog_sample(object):
         
         self.og_abundance = {}
         self.ko_abundance = {}
-        self.total = float(total_sample)
-        self.mapped = 0
+        self.total = total_sample
+        self.mapped_og = 0
         self.mapped_ko = 0
         self.global_ko_list = []
 
@@ -73,7 +73,7 @@ class Eggnog_sample(object):
     def init_unit(cls, given_unit):
 
         # dictionary to transform argument options into coverm units names 
-        unit_dict ={'rpkm': 'RPKM', 'tpm': 'TPM', 'tmm':'Trimmed Mean'} 
+        unit_dict ={'rpkm': 'RPKM', 'tpm': 'TPM', 'tm':'Trimmed_Mean'} 
         units = unit_dict[given_unit] 
 
         Eggnog_sample.option_unit = units
@@ -100,14 +100,13 @@ class Eggnog_sample(object):
         
         return self.samplename
     
-    def load_sample(self, coverm_dict, og_dict):
+    def load_sample(self, orf_dict, og_dict):
 
         """
         Instance method to load all rows from a file as eggnog_orf instances and store them as a 
         eggnog_sample instance
         """
         
-        self.rows=[]
         with open(self.filename,"r") as file:
             for line in file:
                 if not line.startswith("##"): # skip headers
@@ -130,17 +129,17 @@ class Eggnog_sample(object):
 
                             query = items[0]
                             description = items[7]
-                            preferred_name = items[8]
-                            kegg_pathway = items[12]
-                            contig = re.sub(r'_[0-9]*$', '', query)
-                            abundance = coverm_dict[contig][Eggnog_sample.calc_unit]
+                            # preferred_name = items[8]
+                            # kegg_pathway = items[12]
+                            #contig = re.sub(r'_[0-9]*$', '', query)
+                            abundance = orf_dict[query]['abundance']
                             
                             try:
                                 og, kingdom = find_basal(eggnog_ogs)
                                 og_dict = self.add_og_abundance(og, abundance, description, kingdom, og_dict)
-                                self.mapped += float(abundance) # estoy sumando por query !!
+                                self.mapped_og += float(abundance)
                             except:
-                                #print('virus')
+                                #print(eggnog_ogs)
                                 og = '@'
                                 kingdom = 'Virus'
 
@@ -151,11 +150,11 @@ class Eggnog_sample(object):
                             else:
                                 kegg_ko = '-'
 
-                            self.total += float(abundance) # para añadirlo al total y poder calcular bien la abundancia relativa no?
+                            #self.total += float(abundance) # para añadirlo al total y poder calcular bien la abundancia relativa no?
 
                             # es posible que esto no me haga falta
-                            eggnog_orf = Eggnog_orf(query, og, kingdom, description, preferred_name, kegg_ko, kegg_pathway, contig, abundance)
-                            self.rows.append(eggnog_orf)
+                            # eggnog_orf = Eggnog_orf(query, og, kingdom, description, preferred_name, kegg_ko, kegg_pathway, abundance)
+                            # self.rows.append(eggnog_orf)
 
                             
                             
@@ -164,12 +163,12 @@ class Eggnog_sample(object):
                             # self.mapped_ko += abundance * len(kegg_ko)
                             # self.total_ko += abundance * len(kegg_ko)
 
-                            # self.query_list.append(query)
-                            # self.query_dict[query] = kegg_ko
-                            # self.all_dict[query] = {}
-                            # self.all_dict[query]['ko'] = kegg_ko
-                            # self.all_dict[query]['cog'] = find_basal(eggnog_ogs)
-                            # self.all_dict[query]['description'] = description
+                            # # self.query_list.append(query)
+                            # # self.query_dict[query] = kegg_ko
+                            # # self.all_dict[query] = {}
+                            # # self.all_dict[query]['ko'] = kegg_ko
+                            # # self.all_dict[query]['cog'] = find_basal(eggnog_ogs)
+                            # # self.all_dict[query]['description'] = description
         return og_dict
         
     
@@ -225,10 +224,11 @@ class Eggnog_sample(object):
             for og in self.og_abundance.keys():
                     
                 og_dict[og][self.samplename] = (self.og_abundance[og]/self.total)*10**6
-                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped)*10**6
                 
             og_dict = check_unmapped(og_dict, Eggnog_sample.sample_list)
-            og_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped/self.total)*10**6 # Esto no esta bien
+            #tpm_mapped_og = (self.mapped_og/self.total)*10**6 # MAPPED IN TPM
+            #og_dict['UNMAPPED'][self.samplename] = 1000000 * (self.total - self.mapped_og)/self.total # es lo mismo
+            og_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped_og/self.total)*10**6
             og_dict['UNMAPPED']['kingdom'] = '@'
 
         else: 
@@ -240,12 +240,9 @@ class Eggnog_sample(object):
             
             og_dict = check_unmapped(og_dict, Eggnog_sample.sample_list)
             
-            og_dict['UNMAPPED'][self.samplename] = 1 - self.mapped/self.total # Esto no esta bien
+            og_dict['UNMAPPED'][self.samplename] = 1 - self.mapped_og/self.total
             og_dict['UNMAPPED']['kingdom'] = '@'
         
-        # CHECK UP
-        if og_dict['UNMAPPED'][self.samplename] < 0 :
-            print('ERROR CALCULATING ABUNDANCES')
     
             # except:
             #     og_dict[og] = {}
@@ -268,9 +265,6 @@ class Eggnog_sample(object):
         # CHECK WHEN A SEED CORRESPOND TO SEVERAL KOS
         # more_kos = []
         # total_kos = 0 
-
-        # when adding up
-        #ko_dict['UNMAPPED'][self.samplename] = (self.total_ko) - float(self.mapped_ko)
         
         if Eggnog_sample.option_unit == 'TPM':
 
@@ -289,11 +283,10 @@ class Eggnog_sample(object):
                         ko_dict[ko_id][sample_id]=0
             
                 ko_dict[ko_id][self.samplename] = (self.ko_abundance[ko_id]/self.total)*10**6
-                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped)*10**6
             
             ko_dict = check_unmapped(ko_dict, Eggnog_sample.sample_list)
             
-            ko_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped_ko/self.total)*10**6 # Esto no esta bien
+            ko_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped_ko/self.total)*10**6 
 
         else:
 
@@ -314,7 +307,7 @@ class Eggnog_sample(object):
                 ko_dict[ko_id][self.samplename] = self.ko_abundance[ko_id]/self.total
             
             ko_dict = check_unmapped(ko_dict, Eggnog_sample.sample_list)
-            ko_dict['UNMAPPED'][self.samplename] = 1 - self.mapped_ko/self.total # Esto no esta bien
+            ko_dict['UNMAPPED'][self.samplename] = 1 - self.mapped_ko/self.total
 
 
         # CHECK WHEN A SEED CORRESPOND TO SEVERAL KOS
@@ -343,8 +336,6 @@ class Eggnog_sample(object):
             kegg_cov_dict[kegg_p] = 0   
             for ko in annotation[2]:
                 ko_id = ko['KO']
-                # symbol = ko['symbol']
-                # description = ko['description']
                 if ko_id in self.global_ko_list:
                     kegg_cov_dict[kegg_p] +=1
             

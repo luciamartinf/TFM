@@ -1,18 +1,20 @@
 #!/bin/bash
-#SBATCH -c 8                          # cpu-cores per task (>1 if multi-threaded tasks)
-#SBATCH --mem=10GB		      # node count
-#SBATCH --nodes=1
+#SBATCH -c 8                           # cpu-cores per task (>1 if multi-threaded tasks)
+#SBATCH --mem=10GB		                 # Reserve X GB RAM for the job
+#SBATCH --nodes=1                      # node count
 #SBATCH --job-name trimming            # Name for your job
 #SBATCH --time=02:00:00                # Total run time limit in HH:MM:SS
 #SBATCH --partition=fast               # Partition to submit
 #SBATCH --error=logs/02-Trimming_%a.%A.err  # STDERR file
-#SBATCH --output=logs/02-Trimming_%a.%A.out # STDOUT file, %j for job id, %N for hostname
+#SBATCH --output=logs/02-Trimming_%a.%A.out # STDOUT file
 #SBATCH --mail-type=end                # send email when job ends
 #SBATCH --mail-user=luciamartinfernandez99@gmail.com # this is the email you wish to be notified at
 #SBATCH --array=0-116                  # Array range and number of simultanous jobs
 
-# Load required modules
+# Remember to create logs directory in the terminal
+# mkdir logs
 
+# Load required modules
 ml Trimmomatic/0.38-Java-1.8
 
 #Create variables of input and output data
@@ -24,9 +26,6 @@ END_R1=R1.fastq
 END_R2=R2.fastq
 
 # Run trimming analysis on each fastq file
-
-mkdir logs
-
 java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.38.jar PE -phred33 $RUN_PATH_I/${names[${SLURM_ARRAY_TASK_ID}]}_$END_R1* $RUN_PATH_I/${names[${SLURM_ARRAY_TASK_ID}]}_$END_R2* $RUN_PATH_O/${names[${SLURM_ARRAY_TASK_ID}]}_R1.clean_qc_pair.fastq $RUN_PATH_O/${names[${SLURM_ARRAY_TASK_ID}]}_R1.clean_qc_unpair.fastq $RUN_PATH_O/${names[${SLURM_ARRAY_TASK_ID}]}_R2.clean_qc_pair.fastq  $RUN_PATH_O/${names[${SLURM_ARRAY_TASK_ID}]}_R2.clean_qc_unpair.fastq ILLUMINACLIP:$EBROOTTRIMMOMATIC/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:50 # check this parameters after fastQC
 
 

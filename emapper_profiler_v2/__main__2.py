@@ -44,6 +44,11 @@ if not os.path.isdir(inputdir):
 
 files = os.listdir(inputdir)
 
+if arguments.nf_dir:
+    novelfam_dir = arguments.nf_dir
+else:
+    novelfam_dir = os.path.join(inputdir+'/novel_families/')
+
 ## Get output directory 
 
 outputdir = arguments.outputdir
@@ -125,7 +130,7 @@ for sample in sample_list:
     
     # Repeat process for novel families
     if novel_fam :
-        novelfam_file = os.path.join(inputdir+'/novel_families/', sample + '.emapper.annotations')
+        novelfam_file = os.path.join(novelfam_dir, sample + '.emapper.annotations')
         novelfam_sample = NovelFam_sample(novelfam_file, total, sample)
         novelfam_sample.load_sample(orf_dict)
         nf_abundance_all = novelfam_sample.calculate_nf_abundance(nf_abundance_all)

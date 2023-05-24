@@ -34,7 +34,9 @@ def check_arg (args=None) :
     # on/off flag
     parser.add_argument('--filter_euk', '-e', action='store_true', required=False, help='Option to remove eukaryotes')
     
-    parser.add_argument('--novel_fam', '-f', action='store_true', required=False, help='Option to add novel families')
+    parser.add_argument('--novel_fam', '-f', action='store_true', required=False, help='Option to add novel families') 
+    
+    parser.add_argument('--nf_dir', required=False, help='Input directory that contains the novel families annotations. By default considers a directory called novel_families inside the input direcotyr') 
 
 
     # python __main__2.py -i /Users/lucia/Desktop/TFM/scripts/final/data -k /Users/lucia/Desktop/TFM/scripts/parse_KEGGpathway_db/KEGG_pathway_dict.txt -e -u tpm -o results_tpm

@@ -56,20 +56,23 @@ humann --input concatenate_fastq_trimmo/merge_${names[${SLURM_ARRAY_TASK_ID}]}.f
 
 # Additional scripts to modify output. Run directly on terminal
 
-# humann_join_tables -i hmn3_output -o hmn3_genefamilies.tsv --file_name genefamilies
-
-# humann_join_tables -i hmn3_output -o hmn3_pathcoverage.tsv --file_name pathcoverage
-
-# humann_join_tables -i hmn3_output -o hmn3_pathabundance.tsv --file_name pathabundance_relab
-
-# humann_renorm_table -i hmn3_genefamilies.tsv -o hmn3_genefamilies-cpm.tsv --units cpm
-
+# units in relative abundance
 # humann_renorm_table -i hmn3_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_genefamilies.tsv --units relab -o renorm_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_renorm.tsv 
- 
+
+# regroup to KOs after renormalization to relative abundance
 # humann_regroup_table -i renorm_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_renorm.tsv --custom /home/sbodi/miniconda3/envs/biobakery3/lib/python3.7/site-packages/humann/data/utility_mapping/map_ko_uniref90.txt.gz -o ko_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_ko.tsv  
 
+# regroup to KOs with RPKM output
 # humann_regroup_table -i hmn3_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_genefamilies.tsv --custom /home/sbodi/miniconda3/envs/biobakery3/lib/python3.7/site-packages/humann/data/utility_mapping/map_ko_uniref90.txt.gz -o ko_output_rpkm/merge_${names[${SLURM_ARRAY_TASK_ID}]}_ko.tsv  
 
+# regroup to COGs after renormalization to relative abundance
 # humann_regroup_table -i renorm_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_renorm.tsv --custom /home/sbodi/miniconda3/envs/biobakery3/lib/python3.7/site-packages/humann/data/utility_mapping/map_eggnog_uniref90.txt.gz -o cog_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_cog.tsv
 
+# regroup to COGs with RPKM output
 # humann_regroup_table -i hmn3_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_genefamilies.tsv --custom /home/sbodi/miniconda3/envs/biobakery3/lib/python3.7/site-packages/humann/data/utility_mapping/map_eggnog_uniref90.txt.gz -o cog_output_rpkm/merge_${names[${SLURM_ARRAY_TASK_ID}]}_cog.tsv
+
+# Not used
+# humann_renorm_table -i hmn3_genefamilies.tsv -o hmn3_genefamilies-cpm.tsv --units cpm
+# humann_join_tables -i hmn3_output -o hmn3_genefamilies.tsv --file_name genefamilies
+# humann_join_tables -i hmn3_output -o hmn3_pathcoverage.tsv --file_name pathcoverage
+# humann_join_tables -i hmn3_output -o hmn3_pathabundance.tsv --file_name pathabundance_relab

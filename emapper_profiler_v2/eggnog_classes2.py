@@ -146,7 +146,8 @@ class Eggnog_sample(object):
                             if raw_ko != '-':
                                 kegg_ko = get_ko_list(items[11])
                                 self.add_ko_abundance(kegg_ko, abundance)
-                                self.mapped_ko += float(abundance) 
+                                # self.mapped_ko += float(abundance) 
+                                self.mapped_ko += (float(abundance)*len(kegg_ko)) # adding up kos
                             else:
                                 kegg_ko = '-'
 
@@ -203,7 +204,8 @@ class Eggnog_sample(object):
         add abundance to each ko on the list
         """
         # divide abundance by number of kos annotated in the contig
-        abun = float(abundance)/len(kos)
+        #abun = float(abundance)/len(kos)
+        abun = float(abundance) # adding up kos
 
         for ko_id in kos:
             # initialize dictionary for each ko
@@ -224,6 +226,7 @@ class Eggnog_sample(object):
             for og in self.og_abundance.keys():
                     
                 og_dict[og][self.samplename] = (self.og_abundance[og]/self.total)*10**6
+                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped_og)*10**6 # relative to mapped
                 
             og_dict = check_unmapped(og_dict, Eggnog_sample.sample_list)
             #tpm_mapped_og = (self.mapped_og/self.total)*10**6 # MAPPED IN TPM
@@ -236,7 +239,7 @@ class Eggnog_sample(object):
             for og in self.og_abundance.keys():
                     
                 og_dict[og][self.samplename] = self.og_abundance[og]/self.total
-                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped)
+                #og_dict[og][self.samplename] = (self.og_abundance[og]/self.mapped_og) # relative to mapped
             
             og_dict = check_unmapped(og_dict, Eggnog_sample.sample_list)
             
@@ -283,7 +286,8 @@ class Eggnog_sample(object):
                         ko_dict[ko_id][sample_id]=0
             
                 ko_dict[ko_id][self.samplename] = (self.ko_abundance[ko_id]/self.total)*10**6
-            
+                #ko_dict[ko_id][self.samplename] = self.ko_abundance[ko_id]/self.mapped_ko*10**6 # relative to mapped
+
             ko_dict = check_unmapped(ko_dict, Eggnog_sample.sample_list)
             
             ko_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped_ko/self.total)*10**6 
@@ -305,6 +309,7 @@ class Eggnog_sample(object):
                         ko_dict[ko_id][sample_id]=0
             
                 ko_dict[ko_id][self.samplename] = self.ko_abundance[ko_id]/self.total
+                #ko_dict[ko_id][self.samplename] = self.ko_abundance[ko_id]/self.mapped_ko # relative to mapped
             
             ko_dict = check_unmapped(ko_dict, Eggnog_sample.sample_list)
             ko_dict['UNMAPPED'][self.samplename] = 1 - self.mapped_ko/self.total
@@ -331,24 +336,25 @@ class Eggnog_sample(object):
         kegg_cov_dict = {}
 
         for kegg_p, annotation in KEGG_dict.items():
+            kegg_id = str('ko'+kegg_p)
             pathway_description = annotation[0]
             kegg_number = annotation[1]
-            kegg_cov_dict[kegg_p] = 0   
+            kegg_cov_dict[kegg_id] = 0   
             for ko in annotation[2]:
                 ko_id = ko['KO']
                 if ko_id in self.global_ko_list:
-                    kegg_cov_dict[kegg_p] +=1
+                    kegg_cov_dict[kegg_id] +=1
             
-            if kegg_cov_dict[kegg_p] != 0:
-                coverage = kegg_cov_dict[kegg_p]/kegg_number
+            if kegg_cov_dict[kegg_id] != 0:
+                coverage = kegg_cov_dict[kegg_id]/kegg_number
                 if coverage > 0.1: # cut-off proporcion
-                    if not kegg_p in path_coverage.keys():
-                        path_coverage[kegg_p] = {}
-                        path_coverage[kegg_p]['description'] = pathway_description
+                    if not kegg_id in path_coverage.keys():
+                        path_coverage[kegg_id] = {}
+                        path_coverage[kegg_id]['description'] = pathway_description
                         for sample_id in Eggnog_sample.sample_list:
-                            path_coverage[kegg_p][sample_id] = 0
+                            path_coverage[kegg_id][sample_id] = 0
                     
-                    path_coverage[kegg_p][self.samplename] = coverage
+                    path_coverage[kegg_id][self.samplename] = coverage
                     
         return path_coverage
 

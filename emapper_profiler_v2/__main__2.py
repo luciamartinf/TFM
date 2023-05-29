@@ -146,10 +146,10 @@ for sample in sample_list:
 
 print('Writing files. Almost done...')
 
-ko_abundance_all = dict(sorted(ko_abundance_all.items()))
-path_coverage = dict(sorted(path_coverage.items()))
-og_abundance_all = dict(sorted(og_abundance_all.items()))
-nf_abundance_all = dict(sorted(nf_abundance_all.items()))
+# ko_abundance_all = dict(sorted(ko_abundance_all.items()))
+# path_coverage = dict(sorted(path_coverage.items()))
+# og_abundance_all = dict(sorted(og_abundance_all.items()))
+# nf_abundance_all = dict(sorted(nf_abundance_all.items()))
 
 header='KEGG_ko\tDescription\t'+ '\t'.join(sample_list)
 write_tsv(ko_abundance_all, ko_abun_file, header, sample_list, des = True)

@@ -62,7 +62,7 @@ humann --input concatenate_fastq_trimmo/merge_${names[${SLURM_ARRAY_TASK_ID}]}.f
 # regroup to KOs after renormalization to relative abundance
 # humann_regroup_table -i renorm_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_renorm.tsv --custom /home/sbodi/miniconda3/envs/biobakery3/lib/python3.7/site-packages/humann/data/utility_mapping/map_ko_uniref90.txt.gz -o ko_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_ko.tsv  
 
-# regroup to KOs with RPKM output
+# regroup to KOs with original RPK (RPKM) output
 # humann_regroup_table -i hmn3_output/merge_${names[${SLURM_ARRAY_TASK_ID}]}_genefamilies.tsv --custom /home/sbodi/miniconda3/envs/biobakery3/lib/python3.7/site-packages/humann/data/utility_mapping/map_ko_uniref90.txt.gz -o ko_output_rpkm/merge_${names[${SLURM_ARRAY_TASK_ID}]}_ko.tsv  
 
 # regroup to COGs after renormalization to relative abundance

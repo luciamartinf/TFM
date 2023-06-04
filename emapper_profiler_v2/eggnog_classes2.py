@@ -126,19 +126,19 @@ class Eggnog_sample(object):
                             continue
 
                         else:
-
                             query = items[0]
                             description = items[7]
                             # preferred_name = items[8]
                             # kegg_pathway = items[12]
-                            #contig = re.sub(r'_[0-9]*$', '', query)
+                            # contig = re.sub(r'_[0-9]*$', '', query)
                             abundance = orf_dict[query]['abundance']
-                            
+    
                             try:
                                 og, kingdom = find_basal(eggnog_ogs)
                                 og_dict = self.add_og_abundance(og, abundance, description, kingdom, og_dict)
                                 self.mapped_og += float(abundance)
                             except:
+                                # if that didn't work is because the og belongs to a virus. We don't take into account. 
                                 #print(eggnog_ogs)
                                 og = '@'
                                 kingdom = 'Virus'
@@ -158,8 +158,6 @@ class Eggnog_sample(object):
                             # self.rows.append(eggnog_orf)
 
                             
-                            
-                            
                             # if we want to add up abundance for each ko :
                             # self.mapped_ko += abundance * len(kegg_ko)
                             # self.total_ko += abundance * len(kegg_ko)
@@ -171,7 +169,8 @@ class Eggnog_sample(object):
                             # # self.all_dict[query]['cog'] = find_basal(eggnog_ogs)
                             # # self.all_dict[query]['description'] = description
         return og_dict
-        
+    
+
     
     def add_og_abundance(self, og, abundance, des, king, og_dict):
     #def update_og_abundance(self, og, abundance, des, king, og_dict):
@@ -183,6 +182,7 @@ class Eggnog_sample(object):
         # if the og is not in the dictionary, initialize key to 0
         if og not in self.og_abundance.keys():
             self.og_abundance[og] = 0
+            
 
         # add abundance:    
         self.og_abundance[og] += float(abundance)
@@ -324,7 +324,6 @@ class Eggnog_sample(object):
 
 
         return ko_dict
-
             
 
     def calculate_KEGG_pathway_completeness(self, path_coverage, KEGG_dict):

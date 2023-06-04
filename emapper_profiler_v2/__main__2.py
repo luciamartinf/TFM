@@ -53,14 +53,10 @@ else:
 
 outputdir = arguments.outputdir
 
-# Create output directory if it does not exist
-if not os.path.isdir(outputdir):
-    os.mkdir(outputdir)
+## Option arguments
 
-ko_abun_file = os.path.join(outputdir, 'ko_abundance.tsv')
-og_abun_file = os.path.join(outputdir, 'og_abundance.tsv')
-nf_abun_file = os.path.join(outputdir, 'nf_abundance.tsv')
-path_cov_file = os.path.join(outputdir, 'pathway_coverage.tsv')
+remove_euk = arguments.filter_euk
+novel_fam = arguments.novel_fam
 
 
 ## Get all sample names
@@ -84,11 +80,13 @@ units_option = arguments.unit
 
 coverm_suffix = arguments.coverm_suffix
 
+# Create output directory if it does not exist
+if not os.path.isdir(outputdir):
+    os.mkdir(outputdir)
 
-## Option arguments
-
-remove_euk = arguments.filter_euk
-novel_fam = arguments.novel_fam
+ko_abun_file = os.path.join(outputdir, 'ko_abundance.tsv')
+og_abun_file = os.path.join(outputdir, 'og_abundance.tsv')
+path_cov_file = os.path.join(outputdir, 'pathway_coverage.tsv')
 
 #########################
 ### PROGRAM EXECUTION ###
@@ -100,11 +98,14 @@ path_coverage = {}
 og_abundance_all = {}
 nf_abundance_all = {}
 
+
 Eggnog_sample.init_unit(units_option)
 Eggnog_sample.init_sample_list(sample_list)
 
-NovelFam_sample.init_unit(units_option)
-NovelFam_sample.init_sample_list(sample_list)
+if novel_fam :
+    nf_abun_file = os.path.join(outputdir, 'nf_abundance.tsv')
+    NovelFam_sample.init_unit(units_option)
+    NovelFam_sample.init_sample_list(sample_list)
 
 for sample in sample_list:
 
@@ -161,7 +162,8 @@ write_tsv(path_coverage, path_cov_file, header, sample_list, des = True)
 header='OG\tKingdom\tDescription\t'+ '\t'.join(sample_list)
 write_tsv(og_abundance_all, og_abun_file, header, sample_list, des = True, king = True)
 
-header='Novel_Fam\t'+ '\t'.join(sample_list) #+ '\tCOG_match'
-write_tsv(nf_abundance_all, nf_abun_file, header, sample_list) #, cog=True)
+if novel_fam :
+    header='Novel_Fam\t'+ '\t'.join(sample_list) #+ '\tCOG_match'
+    write_tsv(nf_abundance_all, nf_abun_file, header, sample_list) #, cog=True)
 
 

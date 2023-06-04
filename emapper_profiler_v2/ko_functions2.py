@@ -140,7 +140,6 @@ def extract_orf_lengths(fasta_file, coverm_dict:dict, unit):
     
     orf_dict = {}  # Dictionary to store sequence names, lengths and abundances
     total = 0
-    orf_per_contig = {}
 
     with open(fasta_file, 'r') as file:
         lines = file.readlines()
@@ -168,21 +167,6 @@ def extract_orf_lengths(fasta_file, coverm_dict:dict, unit):
                 orf_dict[orf_name]['abundance'] = abundance
                 total += abundance
 
-    #             if unit == 'Trimmed Mean':
-    #                 total += abundance
-    #             else:
-    #                 try:
-    #                     orf_per_contig[contig_name] += 1
-    #                 except:
-    #                     orf_per_contig[contig_name] = 1
-                
-    # if unit == 'RPKM':
-    #     for orf in orf_dict.keys():
-    #         contig_name = re.sub(r'_[0-9]*$', '', orf)
-    #         abun_1 = float(orf_dict[orf]['abundance'])
-    #         abundance = abun_1 / int(orf_per_contig[contig_name])
-    #         orf_dict[orf]['abundance'] = abundance
-    #         total += abundance
 
     return orf_dict, total
 

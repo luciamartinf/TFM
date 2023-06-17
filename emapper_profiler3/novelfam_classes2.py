@@ -142,7 +142,7 @@ class NovelFam_sample(object):
             nf_dict = check_unmapped(nf_dict, NovelFam_sample.sample_list, des=False)
             #tpm_mapped_og = (self.mapped_og/self.total)*10**6 # MAPPED IN TPM
             #og_dict['UNMAPPED'][self.samplename] = 1000000 * (self.total - self.mapped_og)/self.total # es lo mismo
-            nf_dict['UNMAPPED'][self.samplename] = 1000000 - (self.mapped/self.total)*10**6
+            nf_dict['UNMAPPED'][self.samplename] = float(1000000) - (self.mapped/self.total)*10**6
 
         else: 
 

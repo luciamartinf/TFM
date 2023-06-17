@@ -87,7 +87,7 @@ def find_basal(eggnog_ogs):
     for og in ogs:
         group, kingdom = og.split('|')
         og_id, tax_code = group.split('@')
-        if tax_code in ['2', '2759', '2157']: # if tax_code corresponds to Bacteria, Eukaryota or Arkea 
+        if tax_code in ['2', '2759', '2157', '10239']: # if tax_code corresponds to Bacteria, Eukaryota, Arkaea or Virus
             # self.og = og_id
             # self.kingdom = kingdom
             return og_id, kingdom
@@ -103,7 +103,7 @@ def check_unmapped(dict1:dict, sample_list:list, des=True):
 
     return dict1
 
-def write_tsv (dictionnary, out_file, header, sample_list, des = False, king = False, ko= False, cog= False):
+def write_tsv (dictionnary, out_file, header, sample_list, des = False, king = False, sym= False):
 
     '''
     Description:
@@ -122,12 +122,10 @@ def write_tsv (dictionnary, out_file, header, sample_list, des = False, king = F
                 fo.write('\t'+str(dictionnary[key]['kingdom']))
             if des:
                 fo.write('\t'+str(dictionnary[key]['description']))
-            if ko:
-                fo.write('\t'+str(dictionnary[key]['ko']))
+            if sym:
+                fo.write('\t'+str(dictionnary[key]['symbol']))
             for sample in sample_list:
                 fo.write('\t'+ str(dictionnary[key][sample]))
-            # if cog:
-            #     fo.write('\t'+str(dictionnary[key]['cog']).strip(', '))
             fo.write('\n')
     return
 
@@ -179,7 +177,7 @@ def check_key(dict1, key, sample_list):
     return dict1
 
 
-def write_contig_tsv(dictionnary, out_file, header, des = False, king = False, n=2):
+def write_contig_tsv(dictionnary, out_file, header, des = False, king = False, sym=False, n=2):
 
     '''
     Description:
@@ -201,39 +199,9 @@ def write_contig_tsv(dictionnary, out_file, header, des = False, king = False, n
                     fo.write('\t'+str(dictionnary[key]['kingdom']))
                 if des:
                     fo.write('\t'+str(dictionnary[key]['description']))
+                if sym:
+                    fo.write('\t'+str(dictionnary[key]['symbol']))
                 fo.write('\t'+str(contig))
                 fo.write('\t'+str(dictionnary[key][contig]))
                 fo.write('\n')
     return
-
-
-# def write_nested_tsv2 (dictionnary, out_file, header, sample_list, des = False, king = False, ko= False, cog= False):
-
-#     '''
-#     Description:
-#         Function to extract the relevant part of result.txt file
-#     Input:
-#         result.txt file
-#     Return:
-#         dictionary
-#     '''
-	
-#     with open (out_file,'w') as fo:
-#         fo.write(header+ '\n')
-#         for key in dictionnary.keys():
-#             print('key '+key)
-#             for head in dictionnary[key].keys():
-#                 fo.write(key)
-#                 if head in header:
-#                     print(head)
-#                     # if head == 'des':
-#                     #     fo.write('\t'+str(dictionnary[key][head]))
-#                 else:
-#                     contig = head
-#                 #print('contig '+contig)
-#                 fo.write(contig)
-#                 for sample in sample_list:
-#                     #print(dictionnary[key][contig][sample])
-#                     fo.write('\t'+str(dictionnary[key][contig][sample]))          
-#             fo.write('\n')
-#     return

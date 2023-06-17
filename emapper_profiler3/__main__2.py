@@ -56,6 +56,7 @@ outputdir = arguments.outputdir
 ## Option arguments
 
 remove_euk = arguments.filter_euk
+remove_virus = arguments.filter_virus
 novel_fam = arguments.novel_fam
 
 
@@ -86,8 +87,8 @@ if not os.path.isdir(outputdir):
 
 ko_abun_file = os.path.join(outputdir, 'ko_abundance.tsv')
 og_abun_file = os.path.join(outputdir, 'og_abundance.tsv')
-og_contig_file = os.path.join(outputdir, 'og_contig_abun.tsv')
-ko_contig_file = os.path.join(outputdir, 'ko_contig_abun.tsv')
+og_contig_file_all = os.path.join(outputdir, 'og_contig_abun.tsv')
+ko_contig_file_all = os.path.join(outputdir, 'ko_contig_abun.tsv')
 path_cov_file = os.path.join(outputdir, 'pathway_coverage.tsv')
 
 if not os.path.isdir(outputdir+'/ko_contig_abun'):
@@ -114,6 +115,7 @@ Eggnog_sample.init_sample_list(sample_list)
 
 if novel_fam :
     nf_abun_file = os.path.join(outputdir, 'nf_abundance.tsv')
+    nf_contig_file_all = os.path.join(outputdir, 'nf_contig_abun.tsv')
     NovelFam_sample.init_unit(units_option)
     NovelFam_sample.init_sample_list(sample_list)
     if not os.path.isdir(outputdir+'/nf_contig_abun'):
@@ -132,7 +134,7 @@ for sample in sample_list:
     coverm_dict = read_coverm_as_nested_dict(coverm_file, Eggnog_sample.calc_unit) 
     orf_dict, total = extract_orf_lengths(genepred_file, coverm_dict, Eggnog_sample.calc_unit)
 
-    eggnog_sample = Eggnog_sample(eggnog_file, total, sample, remove_euk)
+    eggnog_sample = Eggnog_sample(eggnog_file, total, sample, remove_euk, remove_virus)
     og_abundance_all, og_contig_abun, ko_contig_abun = eggnog_sample.load_sample(orf_dict, coverm_dict, og_abundance_all, og_contig_abun, ko_contig_abun, kos_dict)
     
     # write sample files
@@ -140,8 +142,8 @@ for sample in sample_list:
     og_contig_dict = eggnog_sample.contig_og
     ko_contig_file = os.path.join(outputdir+'/ko_contig_abun', sample+'_ko_contig_abun.tsv')
     og_contig_file = os.path.join(outputdir+'/og_contig_abun', sample+'_og_contig_abun.tsv')
-    header1='KEGG_ko\tDescription\tContig\tTPM'
-    write_contig_tsv(ko_contig_dict, ko_contig_file, header1, des = True, n=1)
+    header1='KEGG_ko\tDescription\tSymbol\tContig\tTPM'
+    write_contig_tsv(ko_contig_dict, ko_contig_file, header1, des = True, sym=True, n=2)
     header2 = 'OG\tKingdom\tDescription\tContig\tTPM'
     write_contig_tsv(og_contig_dict, og_contig_file, header2, des = True, king=True, n=2)
 
@@ -179,8 +181,8 @@ print('Writing files. Almost done...')
 # og_abundance_all = dict(sorted(og_abundance_all.items()))
 # nf_abundance_all = dict(sorted(nf_abundance_all.items()))
 
-header1='KEGG_ko\tDescription\t'+ '\t'.join(sample_list)
-write_tsv(ko_abundance_all, ko_abun_file, header1, sample_list, des = True)
+header1='KEGG_ko\tDescription\tSymbol\t'+ '\t'.join(sample_list)
+write_tsv(ko_abundance_all, ko_abun_file, header1, sample_list, des = True, sym=True)
 write_json(os.path.join(outputdir, 'ko_abundance.json'), ko_abundance_all)
 
 header2='KEGG_pathway\tDescription\t'+ '\t'.join(sample_list)
@@ -189,15 +191,14 @@ write_tsv(path_coverage, path_cov_file, header2, sample_list, des = True)
 header3='OG\tKingdom\tDescription\t'+ '\t'.join(sample_list)
 write_tsv(og_abundance_all, og_abun_file, header3, sample_list, des = True, king = True)
 
+write_tsv(og_contig_abun, og_contig_file_all, header3, sample_list, des = True, king = True)
 
-header4='OG\tKingdom\tDescription\t'+ '\t'.join(sample_list)
-write_tsv(og_contig_abun, og_contig_file, header4, sample_list, des = True, king = True)
-
-header6='OG\tDescription\t'+ '\t'.join(sample_list)
-write_tsv(ko_contig_abun, ko_contig_file, header6, sample_list, des = True)
+write_tsv(ko_contig_abun, ko_contig_file_all, header1, sample_list, des = True, sym=True)
 
 if novel_fam :
     header5='Novel_Fam\t'+ '\t'.join(sample_list) #+ '\tCOG_match'
     write_tsv(nf_abundance_all, nf_abun_file, header5, sample_list) #, cog=True)
+    write_tsv(nf_contig_abun, nf_contig_file_all, header5, sample_list)
+
 
 

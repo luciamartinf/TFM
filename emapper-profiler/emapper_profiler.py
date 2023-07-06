@@ -20,7 +20,7 @@ arguments = check_arg()
 
 KEGG_dict_file = arguments.kegg_dict or "./KEGG_pathway_dict.txt"
 
-kos_dict_file = "/Users/lucia/Desktop/TFM/scripts/parse_KEGGpathway_db/KEGG_kos_dict.txt"
+kos_dict_file = "./KEGG_kos_dict.txt"
 
 # Load the dictionary from the json file
 with open(KEGG_dict_file, "r") as file:

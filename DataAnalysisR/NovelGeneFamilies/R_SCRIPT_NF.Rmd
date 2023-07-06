@@ -34,8 +34,8 @@ subtitle: "Bioinformatics Results"
 # install_github("guokai8/microbial")
 # install_github("Russel88/MicEco")
 # install.packages("ggpolypath") 
-#install.packages("VennDiagram")
-
+# install.packages("VennDiagram")
+# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 
 ```
 
@@ -58,6 +58,7 @@ library ("MicEco")
 library("ggpubr")
 library("ggpolypath") 
 library("VennDiagram") 
+library("pairwiseAdonis")
 ```
 
 # Load the data
@@ -71,11 +72,11 @@ The output ko_abundance.tsv file was open with Excel to create an Excel file (nf
 
 #Loading the data
 #setwd("~/Desktop/RyC_TFM/final_results")
-setwd("~/Downloads")
+#setwd("~/Downloads")
 
 RPKM_df <- read_excel("nf_totalabundance.xlsx",  sheet = "RPKM")
 
-KO_df  <- read_excel("nf_totalabundance.xlsx", sheet = "KO")
+KO_df  <- read_excel("nf_totalabundance.xlsx", sheet = "NF")
 
 samples_df  <- read_excel("nf_totalabundance.xlsx", sheet = "metadata")
 
@@ -257,7 +258,7 @@ shapiro.test(alpha_results$Shannon)
 shapiro.test(alpha_results$Observed)
 ```
 
-From the output, the p-value > 0.05 implying that the distribution of the data are not significantly different from normal distribution. In other words, we can assume the normality for both **Observed** and **Shannon** alpha diversity estimates
+From the output, the p-value > 0.05 implying that the distribution of the data are not significantly different from normal distribution. In other words, we can assume the normality for both **Shannon** alpha diversity estimates
 
 ```{r fig.height=10, fig.width=20, message=FALSE, warning=FALSE, include=TRUE}
 
@@ -435,6 +436,7 @@ plot_ordination(vst_physeq, vst_pcoa, color="Group") +
   theme(aspect.ratio=1) + 
   labs(title = "PCoA (Bray-Curtis index)", subtitle = "DESeq2 Transformation") +
   stat_ellipse(aes(group = Group), linetype = 2) +
+  geom_point(size = 3) +
   theme(axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15),
         axis.title.x = element_text(size = 20),
@@ -448,6 +450,7 @@ plot_ordination(vst_physeq, vst_pcoa, color="group_week") +
   theme(aspect.ratio=1) + 
   labs(title = "PCoA (Bray-Curtis index)", subtitle = "DESeq2 Transformation") +
   stat_ellipse(aes(group = group_week), linetype = 2) +
+  geom_point(size = 3) +
   theme(axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15),
         axis.title.x = element_text(size = 20),
@@ -484,7 +487,7 @@ permutest(disp.age, pairwise=TRUE, permutations=1000)
 
 ```
 
-The p-value of the betadisper permutest is higher than 0.05 so we can assume that sample groups are sufficiently homogenous and we can carry on with the adonis permanova test.
+The p-value of the betadisper permutest is lower than 0.05 so we can't assume that sample groups are sufficiently homogenous and we can't trust the adonis permanova test.
 
 ```{r, warning = FALSE, message = FALSE, echo = TRUE}
 set.seed(0503)
@@ -492,7 +495,7 @@ set.seed(0503)
 # Adonis PERMANOVA analysis
 adonis2(bray_dist ~ sample_data(vst_physeq)$Group)
 ```
-The p-value of the Adonis permanova test is lower than 0.05 so there is a statistically significant difference between groups. 
+The p-value of the Adonis permanova test is lower than 0.05 but we can't trust this value considering that homegeneity within same groups was not proven. 
 
 
 #### group_week
@@ -513,12 +516,15 @@ permutest(disp.age, pairwise=TRUE, permutations=1000)
 ```
 The p-value of the betadisper permutest is higher than 0.05 so we can assume that sample groups are sufficiently homogenous and we can carry on with the adonis permanova test.
 
-```{r, warning = FALSE, message = FALSE, echo = TRUE}
-# Adonis PERMANOVA analysis
-adonis2(bray_dist ~ sample_data(vst_physeq)$group_week)
-```
-The p-value of the Adonis permanova test is higher than 0.05 so we can't prove that there is a statistically significant difference between groups. 
 
+```{r, warning = FALSE, message = FALSE, echo = TRUE}
+# Adonis PERMANOVA pairwise analysis
+
+ps_norm_df <- as(sample_data(vst_physeq), "data.frame")
+
+pairwise.adonis(bray_dist,ps_norm_df$group_week)
+```
+None of the p-values from the pairwise Adonis permanova test resulted higher than 0.05 so we can't prove that there is a statistically significant difference between any of the groups. 
 
 # Differential Abundance Analysis
 

@@ -1,19 +1,10 @@
 import argparse
 
-def check_arg (args=None) :
+def check_arg():
 
-    '''
-	Description:
-        Function collect arguments from command line using argparse
-    Input:
-        args # command line arguments
-    Constant:
-        None
-    Variables
-        parser
-    Return
-        parser.parse_args() # Parsed arguments
-    '''
+    """
+    Function to collect arguments from command line using argparse
+    """
 
     parser = argparse.ArgumentParser(prog = 'emapper_profiler', formatter_class=argparse.RawDescriptionHelpFormatter, description= 'Creates 2 tsv files with the ko abundance and kegg_pathway coverage of each sample')
 

@@ -1,14 +1,16 @@
 # TFM
 
-This GitHub repository houses the code and associated resources for my Master's thesis titled **"Studying fecal microbiota transplantation in HIV patients by novel functional profiling and enrichment method"** and published on july 6^{th} 2023 as part of the Master's degree in Computational Biology from Universidad Politécnica de Madrid
+###  Studying fecal microbiota transplantation in HIV patients by novel functional profiling and enrichment methods
+
+This GitHub repository houses the code and associated resources for my Master's thesis titled *"Studying fecal microbiota transplantation in HIV patients by novel functional profiling and enrichment methods"* and published on july 6^{th} 2023 to complete the Master's degree in Computational Biology from Universidad Politécnica de Madrid
 
 ## Content
 
 The following folders are included in this repository: 
 
-- ´lablogs´: Bash scripts to execute the performeed standard shotgun metagenomics pipeline using SLURM as job scheduler.
-- 'emapper-profiler': Source code and documentation of the developed functional profiling tool
-- 'DataAnalysisR': R scripts to analyze the functional potential of the profiled samples
+- `lablogs`: Bash scripts to execute the performeed standard shotgun metagenomics pipeline using SLURM as job scheduler.
+- `emapper-profiler`: Source code and documentation of the developed functional profiling tool
+- `DataAnalysis`: R scripts to analyze the functional potential of the profiled samples
 
 ## Abstract
 

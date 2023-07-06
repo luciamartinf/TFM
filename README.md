@@ -6,7 +6,7 @@ This GitHub repository houses the code and associated resources for my Master's 
 
 The following folders are included in this repository: 
 
-- 'lablogs': Bash scripts to execute the performeed standard shotgun metagenomics pipeline using SLURM as job scheduler.
+- ´lablogs´: Bash scripts to execute the performeed standard shotgun metagenomics pipeline using SLURM as job scheduler.
 - 'emapper-profiler': Source code and documentation of the developed functional profiling tool
 - 'DataAnalysisR': R scripts to analyze the functional potential of the profiled samples
 

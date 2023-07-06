@@ -7,7 +7,6 @@ from functions import write_tsv, write_json, read_coverm_as_nested_dict, extract
 from arg_parse import check_arg
 import json
 import os
-import sys
 import re
 
 #######################
@@ -16,7 +15,7 @@ import re
 
 # Example: python main.py -i data_resume/ -s sample_file.txt -k /Users/lucia/Desktop/TFM/scripts/parse_KEGGpathway_db/KEGG_KOs_dict.txt
 
-arguments = check_arg(sys.argv[1:])
+arguments = check_arg()
 
 ## Get Kegg pathways dictionary
 

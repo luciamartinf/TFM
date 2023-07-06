@@ -1,4 +1,5 @@
 
 # Shotgun Metagenomics Analysis Pipeline
 
-![shotgun_pipeline2](https://github.com/luciamartinf/TFM/assets/56353778/be0abeb7-2ef9-43e6-9cd1-7fc89062b115)
+![shotgun_pipeline2](https://github.com/luciamartinf/TFM/assets/56353778/c358993c-c438-4474-a018-a95d2c094c23)
+

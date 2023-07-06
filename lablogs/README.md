@@ -5,6 +5,8 @@ Bash scripts for the execution of all the steps of the standard Shotgun Metageno
    
 ![shotgun_pipeline2](https://github.com/luciamartinf/TFM/assets/56353778/c358993c-c438-4474-a018-a95d2c094c23)
 
+## Detailed execution order: 
+
 0. Raw reads, `00_script_raw_reads`: Bash script to create a text file containing all samples identifiers. 
 1. Pre-FastQC, `01_lablog_pre_fastqc`: Quality analysis of the FastQ files with FastQC. Report is generated with multiqc. 
 2. Trimmomatic, `02_lablog_trimmomatic`: Trimming of bad quality samples with Trimmomatic. 

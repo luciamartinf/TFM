@@ -26,7 +26,7 @@ def check_arg():
         help = 'txt file with a list of the samples that need to be processed. If not provided, the sample list will be generated given the input files')
 
     add('--kegg_dict', '-k',
-        help = 'Json file of Kegg pathway dictionary')
+        help = 'Directory containing KEGG_pathway and KEGG_kos json dictionaries')
 
     add('--unit', '-u', type=str, choices=['tpm', 'rpkm', 'tm'], default='rpkm',
         help = 'Specify the output units for the relative abundance results. Default is rpkm')

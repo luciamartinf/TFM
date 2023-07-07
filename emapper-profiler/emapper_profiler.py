@@ -18,9 +18,9 @@ arguments = check_arg()
 
 ## Get Kegg pathways dictionary
 
-KEGG_dict_file = arguments.kegg_dict or "./KEGG_pathway_dict.txt"
+KEGG_dict_file = os.path.join(arguments.kegg_dict, "KEGG_pathway_dict.txt") or "./KEGG_pathway_dict.txt"
+kos_dict_file = os.path.join(arguments.kegg_dict, "KEGG_kos_dict.txt") or "./KEGG_kos_dict.txt"
 
-kos_dict_file = "./KEGG_kos_dict.txt"
 
 # Load the dictionary from the json file
 with open(KEGG_dict_file, "r") as file:

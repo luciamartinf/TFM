@@ -7,11 +7,7 @@
 Functional profiling algorithm for eggNOG-mapper functional annotations. 
 
 
-## Software requirements
-
-* Python 3.7 (or greater)
-
-## BASIC USAGE:
+## Basic usage:
 
 ```
 ./emapper_profiler.py --input_dir data
@@ -44,19 +40,19 @@ emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/samp
 --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0
 ```
 
-### Input Files
-
-Execution of CoverM, for coverage calculations; and eggNOG-mapper, for functional annotations. 
-
-A sample  the files needed to run *emapper-profiler* are  need to be 
-and the ones generated are contained in this github repository and detailed below. 
+## Output files
 
 | **Files**                           | **Description**                                                                                                 |                                                   
 |:----------------------------------------|:----------------------------------------------------------------------------------------------------------------|
-|`ArabidopsisSubNetwork_GeneList.txt`                                |  txt file stored. Contains a list of Arabidopsis Thaliana co-expressed genes                          |                  
-|`GFF_genes.gff3`                                  | New GFF3 file. GFF3 report that contains all the CTTCTT regions found in the genes from the list. The coordinates are relative to the gene.                 |                                                               
-|`GFF_chr.gff3`                                  | New GFF3 file. GFF3 report that contains all the CTTCTT regions found in the genes from the list. The coordinates are relative to the chromosome.                |   
-|`no_CTTCTT_genes_report.txt`                                  | New txt file. Report that contains all the genes that don't contain any CTTCTT region in any of their exons                 |     
+|`ko_relabundance.tsv`                                |  Relative abundance per sample of KEGG orthologs acompanied by its description and symbol. Unmapped proportion of functions is included                      |                  
+|`og_relabundance.tsv`                                  | Relative abundance per sample of orthologous groups from the eggNOG database annotated at the kingdom taxonomic level acompanied by its description. Unmapped proportion of functions is included          |                                                               
+|`ko_totalabundance.tsv`                                | Abundance per sample of KEGG orthologs acompanied by its description and symbol                      |                  
+|`og_totalabundance.tsv`                                  | Abundance per sample of orthologous groups from the eggNOG database annotated at the kingdom taxonomic level acompanied by its description          |  
+
+|`pathway_coverage.tsv`                                |  KEGG pathway's completness percentage per sample according to the annotated KEGG ortholog. Pathway's description is included.                      |                  
+                                                       
+|`nf_relabundance.tsv` (if `--novel_fam` flag is on)                               |  Relative abundance per sample of novel gene families. Unmapped proportion of functions is included          |                                              |                  
+|`nf_totalabundance.tsv` (if `--novel_fam` flag is on)                                 | Abundance per sample of novel gene families          |                                                               
 
 ## USAGE Example
 
@@ -68,6 +64,10 @@ The [data_resume](data_resume) folder contains an example files required for *em
 ```
 
 Complete results generated for all dataset are included in the [results](results) folder. 
+
+## Software requirements
+
+* Python 3.7 (or greater)
 
 ## Source Files
 

@@ -13,4 +13,6 @@ Each folder contains:
 
 - An R script
 - The generated html report
-- A folder with the differential functional abundance file results. 
+- A folder with the differential functional abundance file results.
+
+The R packages required and respective install commands are described in the R scripts. 

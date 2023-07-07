@@ -48,8 +48,7 @@ emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/samp
 |`og_relabundance.tsv`                                  | Relative abundance per sample of orthologous groups from the eggNOG database annotated at the kingdom taxonomic level acompanied by its description. Unmapped proportion of functions is included          |                                                               
 |`ko_totalabundance.tsv`                                | Abundance per sample of KEGG orthologs acompanied by its description and symbol                      |                  
 |`og_totalabundance.tsv`                                  | Abundance per sample of orthologous groups from the eggNOG database annotated at the kingdom taxonomic level acompanied by its description          |  
-
-|`pathway_coverage.tsv`                                |  KEGG pathway's completness percentage per sample according to the annotated KEGG ortholog. Pathway's description is included.                      |                  
+|`pathway_coverage.tsv`                                  |  KEGG pathway's completness percentage per sample according to the annotated KEGG ortholog. Pathway's description is included.                      |                  
                                                        
 |`nf_relabundance.tsv` (if `--novel_fam` flag is on)                               |  Relative abundance per sample of novel gene families. Unmapped proportion of functions is included          |                                              |                  
 |`nf_totalabundance.tsv` (if `--novel_fam` flag is on)                                 | Abundance per sample of novel gene families          |                                                               

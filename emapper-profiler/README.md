@@ -1,11 +1,10 @@
 
 <img width="522" alt="image" src="https://github.com/luciamartinf/TFM/assets/56353778/17243875-e6f0-4da8-aa6e-51dfeb90c7bc">
 
+### Lucía Martín Fernández
 #
 
-### Lucía Martín Fernández
-
-Functional profiling algorithm 
+Functional profiling algorithm for eggNOG-mapper functional annotations. 
 
 
 # Requirements:
@@ -16,16 +15,21 @@ Functional profiling algorithm
 
 # BASIC USAGE:
 
-`./emapper_profiler.py --input_dir data_resume`
+`./emapper_profiler.py --input_dir data`
 
 ## Usage preparation
 
-Execution of CoverM, for coverage calculations; and eggNOG-mapper, for functional annotations. 
+* Execution of CoverM, for coverage calculations; 
 
-` `
+`coverm contig -1 reads/sampleid_R1.clean_qc_pair.fastq -2 reads/sampleid_R2.clean_qc_pair.fastq -r assembly/sampleid/contigs.fasta -o data/sample_coverage_values -m length count reads_per_base mean trimmed_mean tpm rpkm`
 
-` `
+* Execution of eggNOG-mapper, for functional annotations, and default settings from the web server.
 
+`emapper.py -m diamond --itype metagenome --genepred prodigal -i assembly/sampleid/contigs.fasta --output_dir data --output sampleid --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0`
+
+* Execution of eggNOG-mappaer with novel gene families as reference database, and default settings from the web server.
+
+`emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/sampleid/contigs.fasta --output_dir data/novel_families/ --output sample_id --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0`
 
 
 ### Input Files

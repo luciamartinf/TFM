@@ -17,19 +17,19 @@ Functional profiling algorithm for eggNOG-mapper functional annotations.
 
 `./emapper_profiler.py --input_dir data`
 
-## Usage preparation
+## Data preparation
 
 * Execution of CoverM, for coverage calculations; 
 
-`coverm contig -1 reads/sampleid_R1.clean_qc_pair.fastq -2 reads/sampleid_R2.clean_qc_pair.fastq -r assembly/sampleid/contigs.fasta -o data/sample_coverage_values -m length count reads_per_base mean trimmed_mean tpm rpkm`
+```coverm contig -1 reads/sampleid_R1.clean_qc_pair.fastq -2 reads/sampleid_R2.clean_qc_pair.fastq -r assembly/sampleid/contigs.fasta -o data/sample_coverage_values -m length count reads_per_base mean trimmed_mean tpm rpkm```
 
 * Execution of eggNOG-mapper, for functional annotations, and default settings from the web server.
 
-`emapper.py -m diamond --itype metagenome --genepred prodigal -i assembly/sampleid/contigs.fasta --output_dir data --output sampleid --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0`
+```emapper.py -m diamond --itype metagenome --genepred prodigal -i assembly/sampleid/contigs.fasta --output_dir data --output sampleid --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0```
 
 * Execution of eggNOG-mappaer with novel gene families as reference database, and default settings from the web server.
 
-`emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/sampleid/contigs.fasta --output_dir data/novel_families/ --output sample_id --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0`
+```emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/sampleid/contigs.fasta --output_dir data/novel_families/ --output sample_id --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0```
 
 
 ### Input Files

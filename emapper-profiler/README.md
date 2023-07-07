@@ -43,6 +43,7 @@ emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/samp
 ## Arguments
 
 * `--inputdir DIR`,`-i DIR`
+
      Input directory containing CoverM and eggNOG-mapper results. Required. 
 
 `--outputdir DIR`,`-o DIR`, default ='results',

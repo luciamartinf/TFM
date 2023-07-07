@@ -40,6 +40,42 @@ emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/samp
 --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0
 ```
 
+## Arguments
+
+`--inputdir DIR`,`-i DIR`
+    Input directory containing CoverM and eggNOG-mapper results. Required. 
+
+`--outputdir DIR`,`-o DIR`, default ='results',
+   Output directory to store the generated tsv files. By default, output directory is called results.
+
+    add('--coverm_suffix', '-c', default='_coverage_values',
+        help='The suffix of your CoverM files')
+
+    add('--version', action='version', version='%(prog)s 0.0.1')
+
+    add('--sample_file', '-s',
+        help = 'txt file with a list of the samples that need to be processed. If not provided, the sample list will be generated given the input files')
+
+    add('--kegg_dict', '-k',
+        help = 'Directory containing KEGG_pathway and KEGG_kos json dictionaries')
+
+    add('--unit', '-u', type=str, choices=['tpm', 'rpkm', 'tm'], default='rpkm',
+        help = 'Specify the output units for the relative abundance results. Default is rpkm')
+
+    # on/off flag
+    add('--filter_euk', '-e', action='store_true',
+        help='Remove eukaryotes')
+
+    add('--filter_virus', '-v', action='store_true',
+        help='Remove viruses')
+
+    add('--novel_fam', '-f', action='store_true',
+        help='Add novel families')
+
+    add('--nf_dir',
+        help='Input directory that contains the novel families annotations. By default considers a directory called novel_families inside the input directory')
+
+
 ## Output files
 
 | **Files**                           | **Description**                                                                                                 |                                                   
@@ -53,7 +89,7 @@ emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/samp
 |`nf_relabundance.tsv`                                  |  Relative abundance per sample of novel gene families. Unmapped proportion of functions is included          |                                                       
 |`nf_totalabundance.tsv`                                  | Abundance per sample of novel gene families          |                                                               
 
-## USAGE Example
+## Usage Example
 
 The [data_resume](data_resume) folder contains an example files required for *emapper-profiler* execution. The [results_resume](results_resume) folder contains the outputs generated when executing *emapper-profiler* with the following command line:
 
@@ -68,41 +104,5 @@ Complete results generated for all dataset are included in the [results](results
 
 * Python 3.7 (or greater)
 
-## Source Files
 
-### main.rb
-
-The following tasks are performed:
-
--   Reads the genelist file with Arabidopsis Thaliana genes and stores them in an Array
--   Creates a Seq object and gets all the useful information for each gene in the genelist file 
--   Genereates the files previously mentioned
-
-### FileMaster.rb
-
-Class for File Management. Methods defined:
-
-- `get_genelist_from_file`: Class method to read genelist file and create an array withall the genes
-- `fetch`: Class method fetch to access an URL via code, donated by Mark Wilkinson.
-- `generate_no_report`: Class method to write report with all the genes that don't contain any CTTCTT region in any of their exons
-- `generate_gff3_report`: Class method to write GFF3 report with all the CTTCTT regions found in the genes from the list. The coordinates are relative to the gene.
-- `generate_gff3_report_chr`: Class method to write GFF3 report with all the CTTCTT regions found in the genes from the list. The coordinates are relative to the chromosome.
-
-### Seq.rb 
-
-Class to represent all of the information associated with a gene. Methods defined:
-
-- `initialize`: Definition of initialize method.
-- `get_no_genes`: Class method to get the the class variable @@no_cttctt_genes.
-- `get_bio`: Instance method to obtain information for the current genes.
-- `get_coords_chr`: Instance method to obtain the chromose number and the chromosome relative coordinates of the gene
-- `add_new_feature`: Instance method to create new CTTCTT_region feature and add it to the Bio::Sequence object @sequence.
-- `match_exons`: Instance method to find every CTTCTT region in the exons of the current gene on both the + and - strands, adds a new feature to its @sequence and updates @@no_cttctt_genes array
-
-
-## Other files in this repository
-
-- Ruby scripts are commented with YARD and respective documentation can be found in this repository. 
-- `Image1`: Screenshot of the EnsemblPlants webpage for the AT2G46340 gene zoomed in in Chromosome 2 19027247-19027302 region showing the CTTCTT regions can also be found in this repository. 
-- `Image2`: Screenshot of the EnsemblPlants webpage for the AT2G46340 gene zoomed in in Chromosome 2 19027016-19027468 region showing the CTTCTT regions can also be found in this repository. 
 

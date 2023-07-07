@@ -40,41 +40,59 @@ emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/samp
 --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0
 ```
 
-## Arguments
+## Parameters emapper_profiler.py
+
+## General Options
+
+* `--version`
+
+     show version and exit.
+
+## Input options 
 
 * `--inputdir DIR`,`-i DIR`
 
-     Input directory containing CoverM and eggNOG-mapper results. Required. 
+     Input directory containing CoverM and eggNOG-mapper results. Required.
 
-`--outputdir DIR`,`-o DIR`, default ='results',
-   Output directory to store the generated tsv files. By default, output directory is called results.
+* `--coverm_suffix SUFFIX`, `-c SUFFIX`
 
-    add('--coverm_suffix', '-c', default='_coverage_values',
-        help='The suffix of your CoverM files')
+     The suffix of your CoverM files. By default, _coverage_values
 
-    add('--version', action='version', version='%(prog)s 0.0.1')
+* `--sample_file FILE`,`-s FILE`
 
-    add('--sample_file', '-s',
-        help = 'txt file with a list of the samples that need to be processed. If not provided, the sample list will be generated given the input files')
+     Text file with a list of the samples that need to be processed. If not provided, the sample list will be generated given the input file. 
 
-    add('--kegg_dict', '-k',
-        help = 'Directory containing KEGG_pathway and KEGG_kos json dictionaries')
+* `--kegg_dict DIR`, `-k DIR`
 
-    add('--unit', '-u', type=str, choices=['tpm', 'rpkm', 'tm'], default='rpkm',
-        help = 'Specify the output units for the relative abundance results. Default is rpkm')
+     Directory containing KEGG_pathway and KEGG_kos json dictionaries. This files are provided in this repository together with the source code.
+  
+## Output Options
 
-    # on/off flag
-    add('--filter_euk', '-e', action='store_true',
-        help='Remove eukaryotes')
+* `--outputdir DIR`,`-o DIR`
 
-    add('--filter_virus', '-v', action='store_true',
-        help='Remove viruses')
+     Output directory to store the generated tsv files. By default, output directory is called results.
 
-    add('--novel_fam', '-f', action='store_true',
-        help='Add novel families')
+* `--unit [tpm, rpkm, tm]`, `-u [tpm, rpkm, tm]`
+  
+     Specify the output relative abundance normalization units. Options are `rpkm`, Reads per kilobase per million transcripts (RPKM), `tpm`, Transcripts per million (TPM),  and `tm`, trimmed mean. Default is `rpkm`)
 
-    add('--nf_dir',
-        help='Input directory that contains the novel families annotations. By default considers a directory called novel_families inside the input directory')
+* `--filter_euk`, `-e`
+
+     Remove eukaryotes
+
+* `--filter_virus`, `-v`
+
+     Remove viruses
+
+## Options for Novel gene families mode
+
+* `--novel_fam`, `-f`
+
+     Include functional profiling for novel gene families
+
+* `--nf_dir DIR`
+
+     Input directory that contains the novel families annotations. By default considers a directory called novel_families inside the input directory
 
 
 ## Output files

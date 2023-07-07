@@ -7,17 +7,18 @@
 Functional profiling algorithm for eggNOG-mapper functional annotations. 
 
 
-# Requirements:
-
 ## Software requirements
 
 * Python 3.7 (or greater)
 
-# BASIC USAGE:
+## BASIC USAGE:
 
-`./emapper_profiler.py --input_dir data`
+```
+./emapper_profiler.py --input_dir data
+```
+`data` is a folder containing both eggNOG-mapper and CoverM output results from all samples. In the next section, how to generate this files is described.  
 
-## Data preparation
+### Data preparation
 
 * Execution of CoverM, for coverage calculations; 
 
@@ -31,7 +32,8 @@ coverm contig -1 reads/sampleid_R1.clean_qc_pair.fastq -2 reads/sampleid_R2.clea
 
 ```
 emapper.py -m diamond --itype metagenome --genepred prodigal -i assembly/sampleid/contigs.fasta \
---output_dir data --output sampleid --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0
+--output_dir data --output sampleid \ 
+--pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0
 ```
 
 * Execution of eggNOG-mappaer with novel gene families as reference database, and default settings from the web server.
@@ -41,7 +43,6 @@ emapper.py -m novel_fams --itype metagenome --genepred prodigal -i assembly/samp
 --output_dir data/novel_families/ --output sample_id \
 --pident 40.0 --evalue 0.001 --score 60.0 --query_cover 20.0 --subject_cover 20.0
 ```
-
 
 ### Input Files
 
@@ -57,8 +58,16 @@ and the ones generated are contained in this github repository and detailed belo
 |`GFF_chr.gff3`                                  | New GFF3 file. GFF3 report that contains all the CTTCTT regions found in the genes from the list. The coordinates are relative to the chromosome.                |   
 |`no_CTTCTT_genes_report.txt`                                  | New txt file. Report that contains all the genes that don't contain any CTTCTT region in any of their exons                 |     
 
-### How to install it? 
+## USAGE Example
 
+The [data_resume](data_resume) folder contains an example files required for *emapper-profiler* execution. The [results_resume](results_resume) folder contains the outputs generated when executing *emapper-profiler* with the following command line:
+
+```
+./emapper_profiler.py --inputdir data_resume --outputdir results_tpm --filer_euk --unit tpm --filter_virus --novel_fam
+
+```
+
+Complete results generated for all dataset are included in the [results](results) folder. 
 
 ## Source Files
 
